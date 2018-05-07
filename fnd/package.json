@@ -13,6 +13,10 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "http-proxy-middleware": "^0.18.0",
     "lite-server": "^2.3.0"
+  },
+  "dependencies": {
+    "connect-cors": "^0.5.6"
   }
 }

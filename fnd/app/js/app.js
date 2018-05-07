@@ -10,6 +10,22 @@ function app() {
     var networkIdPromise = web3.eth.net.getId(); // resolves on the current network id
     var accountsPromise = web3.eth.getAccounts(); // resolves on an array of accounts
 
+    $.get(
+    "http://localhost:3000/articles",
+        // {paramOne : 1, paramX : 'abc'},
+        function(data) {
+          $('#feed').text(data[0].url);
+        }
+      );
+
+      $.get(
+      "http://localhost:3000/users",
+          // {paramOne : 1, paramX : 'abc'},
+          function(data) {
+            $('#users').text(data[0].first_name);
+          }
+        );
+
     Promise.all([contractDataPromise, networkIdPromise, accountsPromise])
       .then(function initApp(results) {
         var contractData = results[0];
@@ -68,7 +84,24 @@ function app() {
     $("#mint_button").click(function() {
       var amount = $("#amount").val();
       mint(amount);
-    })
+    });
+
+    $("#create_account_button").click(function() {
+      var first_name = $("#first_name").val();
+      var last_name = $("#last_name").val();
+      var password = $("#password").val();
+      $.get(
+      "http://localhost:3000/users",
+          // {paramOne : 1, paramX : 'abc'},
+          function(data) {
+           for (var i in data)
+           {
+             console.log(data[i].first_name)
+           }
+
+          }
+        );
+      });
 
 
 }
