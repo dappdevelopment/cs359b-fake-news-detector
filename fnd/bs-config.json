@@ -1,0 +1,7 @@
+{
+ "comment: lite-server configuration file": 0,
+ "server": {
+   "baseDir": ["./app", "./build/contracts"],
+   "routes" : {"/foo" : "build/foo", "/bar" : "build/bar" }
+ }
+}
