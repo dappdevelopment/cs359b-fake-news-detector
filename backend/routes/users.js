@@ -71,7 +71,7 @@ router.get('/new', function(req, res, next) {
     if (err) {
       return console.error(err.message);
     }
-    let sql = 'SELECT COUNT(1) FROM accounts WHERE first_name = "' + first_name + '" AND last_name = "' + last_name + '" AND password = "' + password + '"';
+    let sql = 'SELECT * FROM accounts WHERE first_name = "' + first_name + '" AND last_name = "' + last_name + '" AND password = "' + password + '"';
     db.all(sql, [], (err, rows) => {
       if (err) {
         throw err;
@@ -96,5 +96,47 @@ router.get('/new', function(req, res, next) {
     console.log('Close the database connection.');
   });
 });
+
+router.get('/login', function(req, res, next) {
+  // Website you wish to allow to connect
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+  res.setHeader('Access-Control-Allow-Credentials', true);
+
+
+  var first_name = req.param('first_name');
+  var last_name = req.param('last_name');
+  var password = req.param('password');
+
+  var users = [];
+  var message = {};
+  let db = new sqlite3.Database('db/fnd.db', (err) => {
+    if (err) {
+      return console.error(err.message);
+    }
+    let sql = 'SELECT * FROM accounts WHERE first_name = "' + first_name + '" AND last_name = "' + last_name + '" AND password = "' + password + '"';
+    console.log(sql);
+    db.all(sql, [], (err, rows) => {
+      if (err) {
+        throw err;
+      }
+      if (rows.length == 0) {
+          message.message =  'incorrect login';
+        res.json(message);
+      } else {
+        message.message =  'success';
+        res.json(message);
+      }
+    });
+  });
+  db.close((err) => {
+    if (err) {
+      return console.error(err.message);
+    }
+    console.log('Close the database connection.');
+  });
+});
+
 
 module.exports = router;
