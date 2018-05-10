@@ -43,6 +43,10 @@ contract FakeNewsMarket {
         reporters[reporter].weight = 1;
     }
 
+    function getCreator() public view returns (address creator) {
+      return creator;
+    }
+
     function report(uint _vote, uint256 _amount) public {
         Reporter storage reporter = reporters[msg.sender];
         require(!reporter.voted, "Already voted.");

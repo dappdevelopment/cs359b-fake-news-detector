@@ -9,7 +9,7 @@ function app() {
     var accounts;
     var contractData;
 
-  var contractDataPromise = $.getJSON('CardinalToken.json');
+  var contractDataPromise = $.getJSON('FakeNewsMarket.json');
   var networkIdPromise = web3.eth.net.getId(); // resolves on the current network id
   var accountsPromise = web3.eth.getAccounts(); // resolves on an array of accounts
 
@@ -35,13 +35,11 @@ function app() {
         networkId = results[1];
         accounts = results[2];
         userAccount = accounts[0];
-        console.log("test");
-        console.log(contractData);
-        console.log(contractData.networks);
         // Make sure the contract is deployed on the connected network
-        if (!(networkId in contractData.networks)) {
-           throw new Error("Contract not found in selected Ethereum network on MetaMask.");
-        }
+
+        // if (!(networkId in contractData.networks)) {
+        //    throw new Error("Contract not found in selected Ethereum network on MetaMask.");
+        // }
 
     //     var contractAddress = contractData.networks[networkId].address;
     //     contract = new web3.eth.Contract(contractData.abi, contractAddress);
@@ -54,9 +52,11 @@ function app() {
       .catch(console.error);
 
     function postArticle(article) {
-      console.log(contractData.networks);
       var contractAddress = contractData.networks[networkId].address;
       var articleContract = new web3.eth.Contract(contractData.abi, contractAddress, article);
+      articleContract.methods.getCreator().call().then(function(creator) {
+        console.log(creator);
+      });
       console.log("Article created successfully!")
     }
 
