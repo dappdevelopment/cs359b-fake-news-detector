@@ -14,7 +14,7 @@ contract FakeNewsMarket {
         uint reputation;
     }
 
-    uint256 public articleHash;
+    bytes32 public articleHash;
     //uint256 public votingPeriod;
     address public creator;
 
@@ -26,7 +26,7 @@ contract FakeNewsMarket {
 
     function FakeNewsMarket(string _article) public {
         creator = msg.sender;
-        articleHash =  sha256(_article);
+        articleHash =  keccak256(_article);
         //votingPeriod = now + 1 days;
     }
 
@@ -44,10 +44,10 @@ contract FakeNewsMarket {
     }
 
     function report(uint _vote, uint256 _amount) public {
-        Reporter storage sender = reporters[msg.sender];
-        require(!sender.voted, "Already voted.");
-        sender.voted = true;
-        sender.vote = _vote;
+        Reporter storage reporter = reporters[msg.sender];
+        require(!reporter.voted, "Already voted.");
+        reporter.voted = true;
+        reporter.vote = _vote;
         reports[_vote] += reporter.weight;
     }
 
