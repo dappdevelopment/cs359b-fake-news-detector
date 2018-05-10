@@ -3,8 +3,11 @@ function app() {
   web3 = new Web3(web3.currentProvider); // MetaMask injected Ethereum provider
   console.log("Using web3 version: " + Web3.version);
 
-  var contract;
-  var userAccount;
+    //var contract;
+    var userAccount;
+    var networkId;
+    var accounts;
+    var contractData;
 
   var contractDataPromise = $.getJSON('CardinalToken.json');
   var networkIdPromise = web3.eth.net.getId(); // resolves on the current network id
@@ -12,38 +15,55 @@ function app() {
 
   $.get(
     "http://localhost:3000/articles",
-    // {paramOne : 1, paramX : 'abc'},
-    function(data) {
-      $('#feed').text(data[0].url);
-    }
-  );
+        // {paramOne : 1, paramX : 'abc'},
+        function(data) {
+          $('#feed').text(data[0].url);
+        }
+      );
 
-  $.get(
-    "http://localhost:3000/users",
-    // {paramOne : 1, paramX : 'abc'},
-    function(data) {
-      $('#users').text(data[0].first_name);
-    }
-  );
+      $.get(
+      "http://localhost:3000/users",
+          // {paramOne : 1, paramX : 'abc'},
+          function(data) {
+            $('#users').text(data[0].first_name);
+          }
+        );
 
-  Promise.all([contractDataPromise, networkIdPromise, accountsPromise])
-  .then(function initApp(results) {
-    var contractData = results[0];
-    var networkId = results[1];
-    var accounts = results[2];
-    userAccount = accounts[0];
-    console.log(contractData);
-    console.log(userAccount);
-    // Make sure the contract is deployed on the connected network
-    if (!(networkId in contractData.networks)) {
-      throw new Error("Contract not found in selected Ethereum network on MetaMask.");
+    Promise.all([contractDataPromise, networkIdPromise, accountsPromise])
+      .then(function initApp(results) {
+        contractData = results[0];
+        networkId = results[1];
+        accounts = results[2];
+        userAccount = accounts[0];
+        console.log("test");
+        console.log(contractData);
+        console.log(contractData.networks);
+        // Make sure the contract is deployed on the connected network
+        if (!(networkId in contractData.networks)) {
+           throw new Error("Contract not found in selected Ethereum network on MetaMask.");
+        }
+
+    //     var contractAddress = contractData.networks[networkId].address;
+    //     contract = new web3.eth.Contract(contractData.abi, contractAddress);
+      })
+      .then( function(){
+        console.log(userAccount);
+        console.log(contractData);
+        console.log("loaded successfully!");
+      })
+      .catch(console.error);
+
+    function postArticle(article) {
+      console.log(contractData.networks);
+      var contractAddress = contractData.networks[networkId].address;
+      var articleContract = new web3.eth.Contract(contractData.abi, contractAddress, article);
+      console.log("Article created successfully!")
     }
 
-    var contractAddress = contractData.networks[networkId].address;
-    contract = new web3.eth.Contract(contractData.abi, contractAddress);
-  })
-  .then(refreshBalance)
-  .catch(console.error);
+    $("#post_button").click(function(){
+      var article = $("url").val();
+      postArticle(article);
+    });
 
   function refreshBalance() { // Returns web3's PromiEvent
   // Calling the contract (try with/without declaring view)
