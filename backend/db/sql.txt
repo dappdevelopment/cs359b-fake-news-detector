@@ -1,0 +1,14 @@
+DROP TABLE accounts;
+DROP TABLE articles;
+DROP TABLE public_keys;
+
+CREATE TABLE accounts(uid integer primary key autoincrement, first_name text, last_name text, password text);
+INSERT INTO accounts(first_name, last_name, password) VALUES("alice", "hau", "pwd");
+INSERT INTO accounts(first_name, last_name, password) VALUES("anvita", "gupta", "pwd");
+
+
+CREATE TABLE articles(url text UNIQUE NOT NULL, deadline text NOT NULL, uid integer NOT NULL);
+INSERT INTO articles(url, deadline, uid) VALUES("https://www.nytimes.com/2018/05/09/us/politics/trump-korea-detainees-pompeo.html?hp&action=click&pgtype=Homepage&clickSource=story-heading&module=first-column-region&region=top-news&WT.nav=top-news", "2018-05-05", 1);
+
+CREATE TABLE public_keys(uid integer, key text);
+INSERT INTO public_keys(uid, key) VALUES(1, "0x2D5f015e0588FFCBF647aF5bd05bbDA8e7c07D8D");

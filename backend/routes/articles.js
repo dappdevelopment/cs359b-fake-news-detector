@@ -5,46 +5,77 @@ const sqlite3 = require('sqlite3').verbose();
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-
-  // Website you wish to allow to connect
-   res.setHeader('Access-Control-Allow-Origin', '*');
-
-   // Request methods you wish to allow
-   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-
-   // Request headers you wish to allow
-   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-
-   // Set to true if you need the website to include cookies in the requests sent
-   // to the API (e.g. in case you use sessions)
-   res.setHeader('Access-Control-Allow-Credentials', true);
-
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+  res.setHeader('Access-Control-Allow-Credentials', true);
 
 
   let db = new sqlite3.Database('db/fnd.db', (err) => {
-  if (err) {
-    return console.error(err.message);
-  }
-
-
-  let sql = 'SELECT * FROM articles ORDER BY deadline';
-  var articles = [];
-  db.all(sql, [], (err, rows) => {
     if (err) {
-      throw err;
+      return console.error(err.message);
     }
-    rows.forEach((row) => {
-      console.log(row.first_name);
-      articles.push(row);
+
+
+    let sql = 'SELECT * FROM articles ORDER BY deadline';
+    var articles = [];
+    db.all(sql, [], (err, rows) => {
+      if (err) {
+        throw err;
+      }
+      rows.forEach((row) => {
+        console.log(row.first_name);
+        articles.push(row);
+      });
+      console.log(articles);
+      res.jsonp(articles);
     });
-    console.log(articles);
-    res.jsonp(articles);
+
+  });
+  // close the database connection
+  db.close((err) => {
+    if (err) {
+      return console.error(err.message);
+    }
+    console.log('Close the database connection.');
   });
 
 });
 
+router.get('/new', function(req, res, next) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+  res.setHeader('Access-Control-Allow-Credentials', true);
 
-  // close the database connection
+  var url = req.param('url');
+  var deadline = req.param('deadline');
+  var uid = req.param('uid');
+  message = {};
+  let db = new sqlite3.Database('db/fnd.db', (err) => {
+    if (err) {
+      return console.error(err.message);
+    }
+
+    let sql = 'SELECT * FROM articles WHERE url = "' + url + '"';
+    console.log(sql);
+
+    db.all(sql, [], (err, rows) => {
+      if (err) {
+        throw err;
+      }
+      if (rows.length == 0) {
+        sql = 'INSERT INTO articles(url, deadline, uid) VALUES("'+url+'","'+deadline+'","'+uid+'")';
+        db.all(sql, [], (err, rows) => {
+          message.message =  'inserted';
+          res.json(message);
+        });
+      } else {
+        message.message= 'exists';
+        res.json(message);
+      }
+    });
+  });
   db.close((err) => {
     if (err) {
       return console.error(err.message);
