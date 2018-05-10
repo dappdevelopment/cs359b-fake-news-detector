@@ -6,7 +6,7 @@ function app() {
   var contract;
   var userAccount;
 
-  var contractDataPromise = $.getJSON('FakeNewsMarket.json');
+  var contractDataPromise = $.getJSON('CardinalToken.json');
   var networkIdPromise = web3.eth.net.getId(); // resolves on the current network id
   var accountsPromise = web3.eth.getAccounts(); // resolves on an array of accounts
 
@@ -32,7 +32,8 @@ function app() {
     var networkId = results[1];
     var accounts = results[2];
     userAccount = accounts[0];
-
+    console.log(contractData);
+    console.log(userAccount);
     // Make sure the contract is deployed on the connected network
     if (!(networkId in contractData.networks)) {
       throw new Error("Contract not found in selected Ethereum network on MetaMask.");
