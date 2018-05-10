@@ -1,14 +1,14 @@
 pragma solidity ^0.4.21;
 
-contract FakeNewsMarket {
+contract FakeNewsMarketDeprecated {
  mapping (address => uint256) votes;
  address creator;
- uint256 article;
+ bytes32 article;
  uint256 votingPeriod;
 
  function FakeNewsMarket(string _article) public {
    creator = msg.sender;
-   article = sha256(_article);
+   article = keccak256(_article);
    votingPeriod = now + 1 days; //arbitrarily set to one day
  }
 
