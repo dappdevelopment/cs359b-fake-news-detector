@@ -3,11 +3,8 @@ function app() {
   web3 = new Web3(web3.currentProvider); // MetaMask injected Ethereum provider
   console.log("Using web3 version: " + Web3.version);
 
-    //var contract;
-    var userAccount;
-    var networkId;
-    var accounts;
-    var contractData;
+  var contract;
+  var userAccount;
 
   var contractDataPromise = $.getJSON('FakeNewsMarket.json');
   var networkIdPromise = web3.eth.net.getId(); // resolves on the current network id
@@ -21,43 +18,40 @@ function app() {
         }
       );
 
-      $.get(
-      "http://localhost:3000/users",
-          // {paramOne : 1, paramX : 'abc'},
-          function(data) {
-            $('#users').text(data[0].first_name);
-          }
-        );
+  $.get(
+    "http://localhost:3000/users",
+      // {paramOne : 1, paramX : 'abc'},
+      function(data) {
+        $('#users').text(data[0].first_name);
+      }
+    );
 
-    Promise.all([contractDataPromise, networkIdPromise, accountsPromise])
-      .then(function initApp(results) {
-        contractData = results[0];
-        networkId = results[1];
-        accounts = results[2];
-        userAccount = accounts[0];
-        console.log("test");
-        console.log(contractData);
-        console.log(contractData.networks);
-        // Make sure the contract is deployed on the connected network
-        if (!(networkId in contractData.networks)) {
-           throw new Error("Contract not found in selected Ethereum network on MetaMask.");
-        }
+  Promise.all([contractDataPromise, networkIdPromise, accountsPromise])
+    .then(function initApp(results) {
+      var contractData = results[0];
+      var networkId = results[1];
+      var accounts = results[2];
+      userAccount = accounts[0];
 
-    //     var contractAddress = contractData.networks[networkId].address;
-    //     contract = new web3.eth.Contract(contractData.abi, contractAddress);
-      })
-      .then( function(){
-        console.log(userAccount);
-        console.log(contractData);
-        console.log("loaded successfully!");
-      })
-      .catch(console.error);
+      // Make sure the contract is deployed on the connected network
+      if (!(networkId in contractData.networks)) {
+         throw new Error("Contract not found in selected Ethereum network on MetaMask.");
+      }
+
+      var contractAddress = contractData.networks[networkId].address;
+      contract = new web3.eth.Contract(contractData.abi, contractAddress);
+      console.log(contract);
+    })
+    .then(console.log("Initialized properly!"))
+    .catch(console.error);
 
     function postArticle(article) {
-      console.log(contractData.networks);
-      var contractAddress = contractData.networks[networkId].address;
-      var articleContract = new web3.eth.Contract(contractData.abi, contractAddress, article);
-      console.log("Article created successfully!")
+      contract.methods.createArticleMarket(String(article)).call()
+      .then(function(result) {
+          alert("Article Posted!");
+      }).catch(function(e) {
+          alert(e);// There was an error! Handle it.
+      });
     }
 
     $("#post_button").click(function(){
@@ -66,12 +60,12 @@ function app() {
     });
 
   function refreshBalance() { // Returns web3's PromiEvent
-  // Calling the contract (try with/without declaring view)
-  contract.methods.balanceOf(userAccount).call().then(function (balance) {
-    $('#display').text(balance + " CDT");
-    $("#loader").hide();
-  });
-}
+    // Calling the contract (try with/without declaring view)
+    contract.methods.balanceOf(userAccount).call().then(function (balance) {
+      $('#display').text(balance + " CDT");
+      $("#loader").hide();
+    });
+  }
 
 function transfer(to, amount) {
   console.log(to, amount)
