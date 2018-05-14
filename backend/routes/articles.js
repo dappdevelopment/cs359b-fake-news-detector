@@ -1,4 +1,5 @@
 var express = require('express');
+var getTitleAtURL = require('get-title-at-url');
 var router = express.Router();
 const sqlite3 = require('sqlite3').verbose();
 
@@ -33,12 +34,12 @@ router.get('/', function(req, res, next) {
 
   });
   // close the database connection
-  db.close((err) => {
-    if (err) {
-      return console.error(err.message);
-    }
-    console.log('Close the database connection.');
-  });
+  // db.close((err) => {
+  //   if (err) {
+  //     return console.error(err.message);
+  //   }
+  //   console.log('Close the database connection.');
+  // });
 
 });
 
@@ -50,7 +51,6 @@ router.get('/new', function(req, res, next) {
 
   var url = req.param('url');
   var deadline = req.param('deadline');
-  var uid = req.param('uid');
   message = {};
   let db = new sqlite3.Database('db/fnd.db', (err) => {
     if (err) {
@@ -65,23 +65,30 @@ router.get('/new', function(req, res, next) {
         throw err;
       }
       if (rows.length == 0) {
-        sql = 'INSERT INTO articles(url, deadline, uid) VALUES("'+url+'","'+deadline+'","'+uid+'")';
-        db.all(sql, [], (err, rows) => {
-          message.message =  'inserted';
-          res.json(message);
+        var title = getTitleAtURL(url, function(title) {
+          sql = 'INSERT INTO articles(url, deadline, title) VALUES("'+url+'","'+deadline+'","'+title+'")';
+          console.log(sql);
+          db.all(sql, [], (err, rows) => {
+            if (err) {
+              throw err;
+            }
+            message.message =  'inserted';
+            res.json(message);
+          });
         });
+
       } else {
         message.message= 'exists';
         res.json(message);
       }
     });
   });
-  db.close((err) => {
-    if (err) {
-      return console.error(err.message);
-    }
-    console.log('Close the database connection.');
-  });
+  // db.close((err) => {
+  //   if (err) {
+  //     return console.error(err.message);
+  //   }
+  //   console.log('Close the database connection.');
+  // });
 
 });
 
