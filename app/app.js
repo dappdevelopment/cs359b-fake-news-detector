@@ -1,17 +1,43 @@
 var express = require('express');
 var app = express();
+var mysql = require('mysql');
 
-app.get('/fakenewsdetector/hello', function (req, res) {
-  res.send('Hello World!');
-});
-app.get('/fakenewsdetector/articles', function(req,res) {
-  var con = mysql.createConnection({
+const con = mysql.createConnection({
   host: "localhost",
   user: "fakenewsdetector",
   password: "KaO62ww0kuom0",
   database: "fakenewsdetector"
 });
-res.send('Hello World!');
+con.connect((err) => {
+  if (err) throw err;
+  console.log('Connected!');
+});
+
+app.get('/fakenewsdetector/hi', function (req, res) {
+  res.send('Hi!!!!!');
+});
+
+app.get('/fakenewsdetector/articles', function(req, res) {
+    console.log('HITTING ARTICLES ENDPOINT');
+    var sql = 'SELECT url, deadline FROM articles ORDER BY deadline';
+    con.query(sql, function (err, rows, fields) {
+      con.end();
+      if (err) {
+        throw err;
+      } else {
+        console.log('Results from query: ', rows);
+        res.send('QUERIED SUCCESSFULLY');
+        // res.json(rows);
+      }
+    });
+ });
+
+app.listen(3000, function () {
+  console.log('Example app listening on port 3000!');
+});
+
+
+// res.send('Hello World!');
 
 //
 // con.connect(function(err) {
@@ -81,7 +107,7 @@ res.send('Hello World!');
 //   console.log('Close the database connection.');
 // });
 //
-});
+
 
 // router.get('/new', function(req, res, next) {
 //   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -125,11 +151,6 @@ res.send('Hello World!');
 //   });
 //
 // });
-
-
-app.listen(3000, function () {
-  console.log('Example app listening on port 3000!');
-});
 
 // var createError = require('http-errors');
 // var express = require('express');
@@ -176,4 +197,4 @@ app.listen(3000, function () {
 //   res.render('error');
 // });
 //
-// module.exports = app;
+module.exports = app;
