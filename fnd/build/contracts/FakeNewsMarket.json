@@ -688,7 +688,7 @@
                               "name": "keccak256",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 129,
+                              "referencedDeclaration": 186,
                               "src": "812:9:0",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_function_sha3_pure$__$returns$_t_bytes32_$",
@@ -717,7 +717,7 @@
                               "name": "msg",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 135,
+                              "referencedDeclaration": 192,
                               "src": "852:3:0",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_magic_message",
@@ -1251,7 +1251,7 @@
                       "name": "keccak256",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 129,
+                      "referencedDeclaration": 186,
                       "src": "1107:9:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_sha3_pure$__$returns$_t_bytes32_$",
@@ -2270,7 +2270,7 @@
                               "name": "keccak256",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 129,
+                              "referencedDeclaration": 186,
                               "src": "812:9:0",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_function_sha3_pure$__$returns$_t_bytes32_$",
@@ -2299,7 +2299,7 @@
                               "name": "msg",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 135,
+                              "referencedDeclaration": 192,
                               "src": "852:3:0",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_magic_message",
@@ -2833,7 +2833,7 @@
                       "name": "keccak256",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 129,
+                      "referencedDeclaration": 186,
                       "src": "1107:9:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_sha3_pure$__$returns$_t_bytes32_$",
@@ -3238,13 +3238,13 @@
     "version": "0.4.23+commit.124ca40d.Emscripten.clang"
   },
   "networks": {
-    "5777": {
+    "4": {
       "events": {},
       "links": {},
-      "address": "0x3c0d4260315a1c496f7ca0c30cf0ef5bbadc3826",
-      "transactionHash": "0xdc22e49959e247ea5c6762e129e4b0046843bc82357f2b8fa4433ff6ae4665f9"
+      "address": "0x595e89af9c4183c55de864594808b856e91e7932",
+      "transactionHash": "0xd095ebc7a4997ea660452625072d3000f007fe3a849c48d32cd6a06ab9e52432"
     }
   },
   "schemaVersion": "2.0.0",
-  "updatedAt": "2018-05-14T01:33:54.209Z"
+  "updatedAt": "2018-05-14T01:40:04.464Z"
 }
