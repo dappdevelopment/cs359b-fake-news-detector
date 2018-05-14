@@ -60,13 +60,24 @@ function app() {
       postArticle(article);
     });
 
-  function refreshBalance() { // Returns web3's PromiEvent
-    // Calling the contract (try with/without declaring view)
-    contract.methods.balanceOf(userAccount).call().then(function (balance) {
-      $('#display').text(balance + " CDT");
-      $("#loader").hide();
+    // function vote(article, voteId){
+    //   console.log("got to here in vote");
+    //   console.log(voteId);
+    // }
+
+    $("#vote_button").click(function() {
+      var article = $("url").val();
+      var vote;
+      if (document.getElementById('vote0').checked) {
+        voteId = 0;
+      }
+      if (document.getElementById('vote1').checked) {
+        voteId = 1;
+      }
+      if (document.getElementById('vote0').checked) {
+        voteId = 2;
+      }
     });
-  }
 
 function transfer(to, amount) {
   console.log(to, amount)
