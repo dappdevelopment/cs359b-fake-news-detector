@@ -77,7 +77,7 @@ $.get(
     // }
 
     $("#vote_button").click(function() {
-      var article = $("url").val();
+      var article = $('#url').val();
       console.log(article);
       var vote;
       if (document.getElementById('vote0').checked) {
@@ -88,6 +88,12 @@ $.get(
       }
       if (document.getElementById('vote0').checked) {
         voteId = 2;
+      }
+      if (article == '') {
+	alert("Please copy and paste in the article url.");
+      } else
+      {
+	alert("Thanks for voting!"); 
       }
     });
 
