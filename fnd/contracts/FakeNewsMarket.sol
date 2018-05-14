@@ -2,26 +2,26 @@ pragma solidity ^0.4.22;
 
 contract FakeNewsMarket {
 
-    //struct Voter {
-    //    bool voted;  // if true, that person already voted
-    //    uint vote;   // 0,1,2
-    //}
+    struct Voter {
+        bool voted;  // if true, that person already voted
+        uint vote;   // 0,1,2
+    }
 
-    //struct Reporter {
-    //    bool voted;  // if true, that person already voted
-    //    uint vote;   // 0,1,2
-    //    uint weight;
-    //    uint reputation;
-    //}
+    struct Reporter {
+        bool voted;  // if true, that person already voted
+        uint vote;   // 0,1,2
+        uint weight;
+        uint reputation;
+    }
 
     struct ArticleMarket{
         bytes32 articleHash;
-        //address creator;
+        address creator;
         //uint256 votingPeriod;
-        //mapping(address => Voter) voters;
-        //mapping(address => Reporter) reporters;
-        //uint8[3] votes;
-        //uint8[3] reports;
+        mapping(address => Voter) voters;
+        mapping(address => Reporter) reporters;
+        uint8[3] votes;
+        uint8[3] reports;
     }
 
     ArticleMarket[] public markets;
@@ -29,7 +29,10 @@ contract FakeNewsMarket {
     function createArticleMarket(string _article) public view returns (bool success){
       uint256 initLen = markets.length;
       markets.push(ArticleMarket({
-          articleHash: keccak256(_article)
+          articleHash: keccak256(_article),
+          creator: msg.sender,
+          votes: [0,0,0],
+          reports: [0,0,0]
       }));
       if (markets.length == initLen + 1){
         return true;
