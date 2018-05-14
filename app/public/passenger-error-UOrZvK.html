@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>We're sorry, but something went wrong: Web application could not be started</title>
+    <style type="text/css">
+      body {
+    font-family: Arial, Sans-Serif;
+    font-size: 13px;
+    color: #222222;
+    margin: 0;
+}
+.column {
+    width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+header {
+    margin-top: 50px;
+    border-bottom: 1px solid #E3E3E3;
+    margin-bottom: 45px;
+}
+footer {
+    font-size: 14px;
+    color: #7F7F7F;
+    border-top: 1px solid #E3E3E3;
+    margin-top: 50px;
+    padding: 40px 0px;
+}
+h1 {
+    font-size: 30px;
+    margin-top: 30px;
+    margin-bottom: 10px;
+}
+.subtitle {
+    margin-top: 0px;
+    margin-bottom: 110px;
+    font-size: 20px;
+}
+#operator_info {
+    display: none;
+}
+#show_operator_info {
+    font-size: 17px;
+    font-weight: normal;
+}
+.left {
+    text-align: left;
+    padding: 8px;
+}
+h3 {
+    margin-top: 30px;
+    margin-bottom: 10px;
+    font-size: 23px;
+}
+ul {
+    padding-left: 16px;
+}
+a, li {
+    font-weight: bold;
+    color: #1781BF;
+    text-decoration: none;
+}
+.error {
+    font-weight: bold;
+    background: #E6F3FC;
+    border-radius: 5px;
+    padding: 7px 12px;
+}
+.bold {
+    font-weight: bold !important;
+}
+pre {
+    margin: 0px;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-all; 
+}
+dt {
+    margin-top: 16px;
+    font-weight: bold;
+}
+dd {
+    margin-left: 0px;
+}
+.plain {
+    color: inherit;
+    font-weight: inherit;
+}
+
+#content {
+    overflow-y: scroll;
+    height: 800px;
+}
+
+    </style>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="generator" content="Phusion Passenger">
+  </head>
+  <body>
+    <header>
+      <div class="column">
+        <svg width="50" height="50" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><path d="m731.234002 153.838666v-18.841339c0-4.417534-3.577416-7.997327-7.990382-7.997327h-6.414571c-4.417012 0-7.990383 3.580525-7.990383 7.997327v18.841339h-18.841339c-4.417534 0-7.997327 3.577416-7.997327 7.990383v6.414571c0 4.417011 3.580525 7.990382 7.997327 7.990382h18.841339v18.841339c0 4.417534 3.577416 7.997328 7.990383 7.997328h6.414571c4.417011 0 7.990382-3.580526 7.990382-7.997328v-18.841339h18.841339c4.417534 0 7.997328-3.577416 7.997328-7.990382v-6.414571c0-4.417012-3.580526-7.990383-7.997328-7.990383z" fill="#f87575" transform="matrix(.70710678 -.70710678 .70710678 .70710678 -593.80455139 424.48059756)"/></svg>
+        <h1>We're sorry, but something went wrong.</h1>
+        <p class="subtitle">The issue has been logged for investigation. Please try again later.</p>
+      </div>
+    </header>
+    <div class="column">
+      <a id="show_operator_info" href="#">Technical details for the administrator of this website</a>
+      <div id="operator_info" style="display:block">
+        <div class="left">
+          <h3>Error:</h3>
+          <span class="error">Web application could not be started</span>
+          <h3>Error ID:</h3>
+          <span class="error">efeba235</span>
+          <h3>Details:</h3>
+          An error occurred while starting the web application: it did not write a startup response in time. If your app needs more time to start you can increase the Passenger start timeout config option. Please read <a href="https://github.com/phusion/passenger/wiki/Debugging-application-startup-problems">this article</a> for more information about this problem.<br>
+<h2>Raw process output:</h2>
+(empty)
+          <h3>System information:</h3>
+          <div id="content">
+            <dl>
+              <dt>Application root</dt>
+              <dd>/home/fakenewsdetector/www/app</dd>
+              <dt>Environment (value of RAILS_ENV, RACK_ENV, WSGI_ENV, NODE_ENV and PASSENGER_APP_ENV)</dt>
+              <dd>production</dd>
+              
+              <dt>User and groups</dt>
+              <dd><pre>uid=<wbr>1010(fakenewsdetector) gid=<wbr>1010(fakenewsdetector) groups=<wbr>1010(fakenewsdetector)
+</pre></dd>
+              <dt>Environment variables</dt>
+              <dd><pre>SHELL=<wbr>/bin/bash
+PASSENGER_DEBUG_DIR=<wbr>/tmp/passenger.spawn-debug.XXXXfu5Pzm
+USER=<wbr>fakenewsdetector
+PASSENGER_USE_FEEDBACK_FD=<wbr>true
+PATH=<wbr>/home/fakenewsdetector/bin:<wbr>/home/fakenewsdetector/.local/bin:<wbr>/usr/local/bin:<wbr>/usr/local/sbin:<wbr>/usr/bin:<wbr>/usr/sbin:<wbr>/bin:<wbr>/sbin:<wbr>.:<wbr>/snap/bin
+PWD=<wbr>/home/fakenewsdetector/www/app
+SHLVL=<wbr>0
+HOME=<wbr>/home/fakenewsdetector
+LOGNAME=<wbr>fakenewsdetector
+SERVER_SOFTWARE=<wbr>nginx/1.12.2 Phusion_Passenger/5.2.2
+XDG_DATA_DIRS=<wbr>/usr/local/share:<wbr>/usr/share:<wbr>/var/lib/snapd/desktop
+IN_PASSENGER=<wbr>1
+PYTHONUNBUFFERED=<wbr>1
+NODE_PATH=<wbr>/usr/share/passenger/node
+RAILS_ENV=<wbr>production
+RACK_ENV=<wbr>production
+WSGI_ENV=<wbr>production
+NODE_ENV=<wbr>production
+PASSENGER_APP_ENV=<wbr>production
+RAILS_RELATIVE_URL_ROOT=<wbr>/fakenewsdetector
+RACK_BASE_URI=<wbr>/fakenewsdetector
+PASSENGER_BASE_URI=<wbr>/fakenewsdetector
+</pre></dd>
+              <dt>Ulimits</dt>
+              <dd><pre>Unknown</pre></dd>
+              
+              <dt>System metrics</dt>
+              <dd><pre>------------- General -------------
+Kernel version    :<wbr> 4.4.0-124-generic
+Uptime            :<wbr> 2d 6h 7m 28s
+Load averages     :<wbr> 0.00%,<wbr> 0.00%,<wbr> 0.01%
+Fork rate         :<wbr> unknown
+
+------------- CPU -------------
+Number of CPUs    :<wbr>    1
+Average CPU usage :<wbr>   0%  --   0% user,<wbr>   0% nice,<wbr>   0% system,<wbr> 100% idle
+  CPU 1           :<wbr>   0%  --   0% user,<wbr>   0% nice,<wbr>   0% system,<wbr> 100% idle
+I/O pressure      :<wbr>   0%
+  CPU 1           :<wbr>   0%
+Interference from other VMs:<wbr>   0%
+  CPU 1                    :<wbr>   0%
+
+------------- Memory -------------
+RAM total         :<wbr>    992 MB
+RAM used          :<wbr>    214 MB (22%)
+RAM free          :<wbr>    778 MB
+Swap total        :<wbr>   4095 MB
+Swap used         :<wbr>    192 MB (5%)
+Swap free         :<wbr>   3903 MB
+Swap in           :<wbr> unknown
+Swap out          :<wbr> unknown
+
+</pre></dd>
+              
+              
+              
+              
+              
+              
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+    <footer>
+      <!--
+       You are free to modify the footer as you see fit,
+       but we kindly ask of you to preserve the following
+       text. Thank you.
+       -->
+      <div class="column">
+        This website is powered by <b>Passenger</b>&reg;, a rock-solid, feature-rich web application server that integrates with Apache and Nginx built by <b>Phusion</b>&reg;.
+      </div>
+    </footer>
+  </body>
+</html>

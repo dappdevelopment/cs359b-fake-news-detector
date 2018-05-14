@@ -28,6 +28,7 @@ function app() {
 
   Promise.all([contractDataPromise, networkIdPromise, accountsPromise])
     .then(function initApp(results) {
+      console.log("starting init app");
       var contractData = results[0];
       var networkId = results[1];
       var accounts = results[2];
@@ -38,12 +39,11 @@ function app() {
          throw new Error("Contract not found in selected Ethereum network on MetaMask.");
       }
 
-      var contractAddress = contractData.networks[networkId].address;
-      contract = new web3.eth.Contract(contractData.abi, contractAddress);
+      var contractAddress = "0x595e89af9c4183c55de864594808b856e91e7932";
       console.log(contractAddress);
+      contract = new web3.eth.Contract(contractData.abi, contractAddress);
       console.log("got to end of first then")
     })
-    .then(console.log("Got here"))
     .catch(console.error);
 
     function postArticle(article) {
