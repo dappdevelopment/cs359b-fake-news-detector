@@ -3,11 +3,11 @@ function app() {
   web3 = new Web3(web3.currentProvider); // MetaMask injected Ethereum provider
   console.log("Using web3 version: " + Web3.version);
 
-    //var contract;
-    var userAccount;
-    var networkId;
-    var accounts;
-    var contractData;
+  //var contract;
+  var userAccount;
+  var networkId;
+  var accounts;
+  var contractData;
 
   var contractDataPromise = $.getJSON('FakeNewsMarket.json');
   var networkIdPromise = web3.eth.net.getId(); // resolves on the current network id
@@ -15,89 +15,89 @@ function app() {
 
   $.get(
     "http://localhost:3000/articles",
-        // {paramOne : 1, paramX : 'abc'},
+    // {paramOne : 1, paramX : 'abc'},
 
-        function(data) {
-          var inHTML = "";
-          $.each(data, function(index, value) {
-            var article = " \
-            <article> \
-              <header> \
-                <span class=\"date\">Vote Deadline: "+value.deadline+"</span> \
-                <h2><a href=\""+value.url+"\">"+value.title+"</a></h2>\
-              </header>\
-              <!-- <a href=\"#\" class=\"image fit\"><img src=\"images/pic02.jpg\" alt=\"\" /></a> -->\
-                <input type=\"radio\" id=\"no-errors\" name=\"demo-priority\" checked>\
-                <label for=\"no-errors\">No errors</label>\
-                <input type=\"radio\" id=\"some-errors\" name=\"demo-priority\" checked>\
-                <label for=\"some-errors\">Some errors</label>\
-                <input type=\"radio\" id=\"many-errors\" name=\"demo-priority\" checked>\
-                <label for=\"many-errors\">Many errors</label>\
-                <ul class=\"actions\"> \
-                  <li><a href=\""+value.url+"\"class=\"button\">Vote</a></li>\
-                </ul>\
-            </article>"
-            inHTML += article;
-          });
-          console.log(inHTML);
-          $('#feed').text(data[0].url);
-          $('#article_feed').html(inHTML);
-        }
-      );
+    function(data) {
+      var inHTML = "";
+      $.each(data, function(index, value) {
+        var article = " \
+        <article> \
+        <header> \
+        <span class=\"date\">Vote Deadline: "+value.deadline+"</span> \
+        <h2><a href=\""+value.url+"\">"+value.title+"</a></h2>\
+        </header>\
+        <!-- <a href=\"#\" class=\"image fit\"><img src=\"images/pic02.jpg\" alt=\"\" /></a> -->\
+        <input type=\"radio\" id=\"no-errors\" name=\"demo-priority\" checked>\
+        <label for=\"no-errors\">No errors</label>\
+        <input type=\"radio\" id=\"some-errors\" name=\"demo-priority\" checked>\
+        <label for=\"some-errors\">Some errors</label>\
+        <input type=\"radio\" id=\"many-errors\" name=\"demo-priority\" checked>\
+        <label for=\"many-errors\">Many errors</label>\
+        <ul class=\"actions\"> \
+        <li><a href=\""+value.url+"\"class=\"button\">Vote</a></li>\
+        </ul>\
+        </article>"
+        inHTML += article;
+      });
+      console.log(inHTML);
+      $('#feed').text(data[0].url);
+      $('#article_feed').html(inHTML);
+    }
+  );
 
-      $.get(
-      "http://localhost:3000/users",
-          // {paramOne : 1, paramX : 'abc'},
-          function(data) {
-            $('#users').text(data[0].first_name);
-          }
-        );
+  $.get(
+    "http://localhost:3000/users",
+    // {paramOne : 1, paramX : 'abc'},
+    function(data) {
+      $('#users').text(data[0].first_name);
+    }
+  );
 
-    Promise.all([contractDataPromise, networkIdPromise, accountsPromise])
-      .then(function initApp(results) {
-        contractData = results[0];
-        networkId = results[1];
-        accounts = results[2];
-        userAccount = accounts[0];
-        // Make sure the contract is deployed on the connected network
+  Promise.all([contractDataPromise, networkIdPromise, accountsPromise])
+  .then(function initApp(results) {
+    contractData = results[0];
+    networkId = results[1];
+    accounts = results[2];
+    userAccount = accounts[0];
+    // Make sure the contract is deployed on the connected network
 
-        // if (!(networkId in contractData.networks)) {
-        //    throw new Error("Contract not found in selected Ethereum network on MetaMask.");
-        // }
+    // if (!(networkId in contractData.networks)) {
+    //    throw new Error("Contract not found in selected Ethereum network on MetaMask.");
+    // }
 
     //     var contractAddress = contractData.networks[networkId].address;
     //     contract = new web3.eth.Contract(contractData.abi, contractAddress);
-      })
-      .then( function(){
-        console.log(userAccount);
-        console.log(contractData);
-        console.log("loaded successfully!");
-      })
-      .catch(console.error);
+  })
+  .then( function(){
+    console.log(userAccount);
+    console.log(contractData);
+    console.log("loaded successfully!");
+  })
+  .catch(console.error);
 
-    function postArticle(article) {
-      var contractAddress = contractData.networks[networkId].address;
-      var articleContract = new web3.eth.Contract(contractData.abi, contractAddress, article);
-      articleContract.methods.getCreator().call().then(function(creator) {
-        console.log(creator);
-      });
-      console.log("Article created successfully!")
-    }
-
-    $("#post_button").click(function(){
-      var article = $("url").val();
-      var deadline = $("deadline").val();
-      console.log(article);
-      var request = "http://localhost:3000/articles/new" + "?url=" + article + "&deadline=" + deadline;
-      console.log(request);
-      $.get(
-      request,
-          function(data) {
-            $('#result').text(data[0].message);
-          }
-        );
-      // postArticle(article);
+  function postArticle(article) {
+    var contractAddress = contractData.networks[networkId].address;
+    var articleContract = new web3.eth.Contract(contractData.abi, contractAddress, article);
+    articleContract.methods.getCreator().call().then(function(creator) {
+      console.log(creator);
     });
+    console.log("Article created successfully!")
+  }
+
+  $("#post_button").click(function(){
+    var article = $("url").val();
+    var deadline = $("deadline").val();
+    console.log(article);
+    var request = "http://localhost:3000/articles/new" + "?url=" + article + "&deadline=" + deadline;
+    console.log(request);
+    $.get(
+      request,
+      function(data) {
+        $('#result').text(data[0].message);
+      }
+    );
+    // postArticle(article);
+  });
 
   function refreshBalance() { // Returns web3's PromiEvent
   // Calling the contract (try with/without declaring view)

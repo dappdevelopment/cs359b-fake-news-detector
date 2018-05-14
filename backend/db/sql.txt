@@ -7,7 +7,7 @@ INSERT INTO accounts(first_name, last_name, password) VALUES("alice", "hau", "pw
 INSERT INTO accounts(first_name, last_name, password) VALUES("anvita", "gupta", "pwd");
 
 
-CREATE TABLE articles(url text UNIQUE NOT NULL, deadline text NOT NULL, title text);
+CREATE TABLE articles(url text UNIQUE NOT NULL, deadline text NOT NULL, title text NOT NULL);
 
 CREATE TABLE public_keys(uid integer, key text);
 INSERT INTO public_keys(uid, key) VALUES(1, "0x2D5f015e0588FFCBF647aF5bd05bbDA8e7c07D8D");
