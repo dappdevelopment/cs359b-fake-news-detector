@@ -9,10 +9,31 @@
    </head>
    <body>
       <h1>Vote</h1>
+
        <div class="container">
            <label for="url" class="col-lg-2 control-label">Article URL</label>
            <input id="url" type="text">
-           <button id="vote_button">Vote</button>
+
+           <div class="container">
+             <label for="vote0">No Errors</label>
+             <input type="radio" id="vote0" name="vote" value="vote0">
+
+            <label for="vote1">1-3 Errors</label>
+            <input type="radio" id="vote1" name="vote" value="vote1">
+
+            <label for="vote2">FAKE news!</label>
+            <input type="radio" id="vote2" name="vote" value="vote2">
+
+           </div>
+
+           <div>
+             <button id="vote_button">Vote</button>
+           </div>
+
+
        </div>
+      <a href="feed.html">Article Feed</a>
+      <a href="post.html">Post</a>
+      <a href="vote.html">Vote</a>
    </body>
 </html>

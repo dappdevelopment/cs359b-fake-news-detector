@@ -13,6 +13,7 @@
 		<noscript><link rel="stylesheet" href="css/noscript.css" /></noscript>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://dapps.stanford.edu/web3/web3-1.0.0-beta.34.min.js"></script>
+		<script src="js/app.js"></script>
 	</head>
 	<body class="is-loading">
 
@@ -29,6 +30,7 @@
 						<ul class="links">
 							<li><a href="index.html">Feed</a></li>
 							<li class="active"><a href="post.html">Post</a></li>
+							<li><a href="vote.html">Vote</a></li>
 						</ul>
 					</nav>
 
@@ -36,24 +38,14 @@
 					<div id="main">
 
 						<!-- Post -->
-							<section class="post">
-                <!-- <form method="post" action="#"> -->
-  								<div class="field">
-  									<label for="url">Article URL</label>
-  									<input type="text" name="url" id="url" />
-  								</div>
-  								<div class="field">
-  									<label for="deadline">Deadline to Vote</label>
-  									<input type="date" name="deadline" id="deadline" />
-  								</div>
-  								<ul class="actions">
-                    <button id="post_button">Post Article</button>
-
-  									<!-- <li><class="button" id="post_button" value="Post Article" /></li> -->
-  								</ul>
-  							<!-- </form> -->
-                <h1 id = "result"></h1>
-							</section>
+						<h1>Post Article</h1>
+						<div class="container">
+								<label for="url" class="col-lg-2 control-label">Article URL</label>
+								<input id="url" type="text">
+								<label for="deadline" class="col-lg-2 control-label">Deadline</label>
+								<input id="deadline" type="date" min='2018-05-15'>
+								<button id="post_button">Post</button>
+						</div>
 
 					</div>
 
@@ -73,4 +65,28 @@
     <script src="js/main.js"></script>
 
 	</body>
+<!-- =======
+  <head>
+      <title>Post Article</title>
+      <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+      <script src="https://dapps.stanford.edu/web3/web3-1.0.0-beta.34.min.js"></script>
+      <script src="js/app.js"></script>
+      <link rel="stylesheet" type="text/css" href="css/app.css">
+   </head>
+   <body>
+       <h1>Post Article</h1>
+       <div class="container">
+           <label for="url" class="col-lg-2 control-label">Article URL</label>
+           <input id="url" type="text">
+           <label for="deadline" class="col-lg-2 control-label">Deadline</label>
+           <input id="deadline" type="date" min='2018-05-15'>
+           <button id="post_button">Post</button>
+       </div>
+<a href="feed.html">Article Feed</a>
+      <a href="post.html">Post</a>
+      <a href="vote.html">Vote</a>
+
+   </body>
+>>>>>>> a0118c92d5ac9ab99274cfc10188e45a03c7ac84:app/public/post.html -->
 </html>
