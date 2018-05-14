@@ -4,6 +4,129 @@ var app = express();
 app.get('/fakenewsdetector/hello', function (req, res) {
   res.send('Hello World!');
 });
+app.get('/fakenewsdetector/articles', function(req,res) {
+  var con = mysql.createConnection({
+  host: "localhost",
+  user: "fakenewsdetector",
+  password: "KaO62ww0kuom0",
+  database: "fakenewsdetector"
+});
+res.send('Hello World!');
+
+//
+// con.connect(function(err) {
+//   if (err) throw err;
+//   console.log("Connected!");
+//   con.query("CREATE DATABASE fnd", function (err, result) {
+//     if (err) throw err;
+//     console.log("Database created");
+//   });
+//   var sql = "CREATE TABLE articles (url VARCHAR(255), deadline VARCHAR(255))";
+//    con.query(sql, function (err, result) {
+//      if (err) throw err;
+//      console.log("Table created");
+//    });
+//    var sql = "INSERT INTO articles (url, deadline) VALUES ('https://www.cnn.com/', '07-05-2018')";
+//   con.query(sql, function (err, result) {
+//     if (err) throw err;
+//     console.log("1 record inserted");
+//   });
+//   var sql = 'SELECT * FROM articles ORDER BY deadline';
+//   con.query(sql, function (err, result) {
+//     if (err) throw err;
+//     result.forEach((row) => {
+//       console.log(row.first_name);
+//       articles.push(row);
+//     });
+//
+//     res.jsonp(articles);
+//   });
+// });
+//
+// con.connect(function(err) {
+//   if (err) throw err;
+//   console.log("Connected!");
+//   var sql = 'SELECT * FROM articles ORDER BY deadline';
+//   con.query(sql, function (err, result) {
+//     if (err) throw err;
+//     result.forEach((row) => {
+//       console.log(row.first_name);
+//       articles.push(row);
+//     });
+//
+//     res.jsonp(articles);
+//   });
+// });
+//
+//   let sql = 'SELECT * FROM articles ORDER BY deadline';
+//   var articles = [];
+//   db.all(sql, [], (err, rows) => {
+//     if (err) {
+//       throw err;
+//     }
+//     rows.forEach((row) => {
+//       console.log(row.first_name);
+//       articles.push(row);
+//     });
+//     console.log(articles);
+//     res.jsonp(articles);
+//   });
+//
+// });
+// // close the database connection
+// db.close((err) => {
+//   if (err) {
+//     return console.error(err.message);
+//   }
+//   console.log('Close the database connection.');
+// });
+//
+});
+
+// router.get('/new', function(req, res, next) {
+//   res.setHeader('Access-Control-Allow-Origin', '*');
+//   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+//   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+//   res.setHeader('Access-Control-Allow-Credentials', true);
+//
+//   var url = req.param('url');
+//   var deadline = req.param('deadline');
+//   var uid = req.param('uid');
+//   message = {};
+//   let db = new sqlite3.Database('db/fnd.db', (err) => {
+//     if (err) {
+//       return console.error(err.message);
+//     }
+//
+//     let sql = 'SELECT * FROM articles WHERE url = "' + url + '"';
+//     console.log(sql);
+//
+//     db.all(sql, [], (err, rows) => {
+//       if (err) {
+//         throw err;
+//       }
+//       if (rows.length == 0) {
+//         sql = 'INSERT INTO articles(url, deadline, uid) VALUES("'+url+'","'+deadline+'","'+uid+'")';
+//         db.all(sql, [], (err, rows) => {
+//           message.message =  'inserted';
+//           res.json(message);
+//         });
+//       } else {
+//         message.message= 'exists';
+//         res.json(message);
+//       }
+//     });
+//   });
+//   db.close((err) => {
+//     if (err) {
+//       return console.error(err.message);
+//     }
+//     console.log('Close the database connection.');
+//   });
+//
+// });
+
+
 app.listen(3000, function () {
   console.log('Example app listening on port 3000!');
 });
