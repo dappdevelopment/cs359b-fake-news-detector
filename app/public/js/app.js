@@ -10,13 +10,18 @@ function app() {
   var networkIdPromise = web3.eth.net.getId(); // resolves on the current network id
   var accountsPromise = web3.eth.getAccounts(); // resolves on an array of accounts
 
-  // $.get(
-  //   "http://localhost:3000/articles",
-  //       // {paramOne : 1, paramX : 'abc'},
-  //       function(data) {
-  //         $('#feed').text(data[0].url);
-  //       }
-  //     );
+  $.get(
+    "http://localhost:3000/articles",
+        // {paramOne : 1, paramX : 'abc'},
+        function(data) {
+          // $('#feed').append(data[0].url);
+          data.forEach(function(article) {
+            $('#feed').append('<li><a href="'+ article.url +'">'+url+'</a></li>');
+          });
+
+
+        }
+      );
   //
   // $.get(
   //   "http://localhost:3000/users",
