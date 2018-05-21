@@ -10,21 +10,20 @@ function app() {
   var networkIdPromise = web3.eth.net.getId(); // resolves on the current network id
   var accountsPromise = web3.eth.getAccounts(); // resolves on an array of accounts
 
-  // $.get(
-  //   "http://localhost:3000/articles",
-  //       // {paramOne : 1, paramX : 'abc'},
-  //       function(data) {
-  //         $('#feed').text(data[0].url);
-  //       }
-  //     );
-  //
-  // $.get(
-  //   "http://localhost:3000/users",
-  //     // {paramOne : 1, paramX : 'abc'},
-  //     function(data) {
-  //       $('#users').text(data[0].first_name);
-  //     }
-  //   );
+   $.get(
+     "https://dapps.stanford.edu/fakenewsdetector/articles",
+         // {paramOne : 1, paramX : 'abc'},
+         function(data) {
+           //$('#feed').text(data[0].url);
+          data.forEach(function(article) {
+            console.log('<li><a href="' + article.url + '">url</a></li>');
+            $('#feed').append('<li>Deadline to vote: '+article.deadline+'<br><a href="' + article.url + '">'+article.title+'</a></li>');
+	    console.log($('#feed'));
+          });
+         }
+       );
+
+
 
   Promise.all([contractDataPromise, networkIdPromise, accountsPromise])
     .then(function initApp(results) {
@@ -39,25 +38,44 @@ function app() {
          throw new Error("Contract not found in selected Ethereum network on MetaMask.");
       }
 
-      var contractAddress = "0x595e89af9c4183c55de864594808b856e91e7932";
+      var contractAddress = "0xfe27aff3e8f81ab09f8acc2a639e3330f93eb93d";
       console.log(contractAddress);
       contract = new web3.eth.Contract(contractData.abi, contractAddress);
       console.log("got to end of first then")
     })
     .catch(console.error);
 
-    function postArticle(article) {
+    function postArticle(article, deadline) {
+     console.log("https://dapps.stanford.edu/fakenewsdetector/post_article?url="+article+"&deadline="+deadline);
       contract.methods.createArticleMarket(String(article)).call()
       .then(function(result) {
-          alert("Article Posted!");
+        $.get(
+          "https://dapps.stanford.edu/fakenewsdetector/post_article?url="+article+"&deadline="+deadline
+        );
+        alert("Article Posted!");
       }).catch(function(e) {
+          alert(e);// There was an error! Handle it.
+      });
+
+      contract.methods.getNumArticles().call()
+      .then(function(result) {
+        alert("Num articles", result);
+      })
+      .catch(function(e) {
           alert(e);// There was an error! Handle it.
       });
     }
 
     $("#post_button").click(function(){
-      var article = $("url").val();
-      postArticle(article);
+      $('#url').text('hi');
+      var article = $("#url").val();
+      var deadline = $("#deadline").val();
+      if (article != '' && deadline != '') {
+          postArticle(article, deadline);
+	}
+      else {
+	alert("Please fill in both fields");
+       }
     });
 
     // function vote(article, voteId){
@@ -66,7 +84,8 @@ function app() {
     // }
 
     $("#vote_button").click(function() {
-      var article = $("url").val();
+      var article = $('#url').val();
+      console.log(article);
       var vote;
       if (document.getElementById('vote0').checked) {
         voteId = 0;
@@ -76,6 +95,12 @@ function app() {
       }
       if (document.getElementById('vote0').checked) {
         voteId = 2;
+      }
+      if (article == '') {
+	alert("Please copy and paste in the article url.");
+      } else
+      {
+	alert("Thanks for voting!");
       }
     });
 
