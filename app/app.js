@@ -4,10 +4,18 @@ var mysql = require('mysql');
 var getTitleAtURL = require('get-title-at-url');
 
 const con = mysql.createConnection({
+  /* For server */
+  // host: "localhost",
+  // user: "fakenewsdetector",
+  // password: "KaO62ww0kuom0",
+  // database: "fakenewsdetector"
+
+  /* For local */
   host: "localhost",
-  user: "fakenewsdetector",
-  password: "KaO62ww0kuom0",
-  database: "fakenewsdetector"
+  user: "root",
+  password: "pwd",
+  database: "fakenewsdetector",
+  insecureAuth : true
 });
 
 app.get('/fakenewsdetector/articles', function(req,res) {
@@ -43,6 +51,6 @@ app.get('/fakenewsdetector/post_article', function(req,res) {
 
 app.listen(3000, function () {
   console.log('Example app listening on port 3000!');
-  
-});
 
+});
+module.exports = app;

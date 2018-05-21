@@ -48,9 +48,36 @@ function app() {
             </ul>\
             </article>";
             $('#feed').append(article);
+
+            $('#feed').append('<li>Deadline to vote: '+article.deadline+'<br><a href="' + article.url + '">'+article.title+'</a></li>');
           });
          }
        );
+
+   var inHTML = "";
+   $.each(data, function(index, value) {
+     var article = " \
+     <article> \
+     <header> \
+     <span class=\"date\">Vote Deadline: "+value.deadline+"</span> \
+     <h2><a href=\""+value.url+"\">"+value.title+"</a></h2>\
+     </header>\
+     <!-- <a href=\"#\" class=\"image fit\"><img src=\"images/pic02.jpg\" alt=\"\" /></a> -->\
+     <input type=\"radio\" id=\"no-errors\" name=\"demo-priority\" checked>\
+     <label for=\"no-errors\">No errors</label>\
+     <input type=\"radio\" id=\"some-errors\" name=\"demo-priority\" checked>\
+     <label for=\"some-errors\">Some errors</label>\
+     <input type=\"radio\" id=\"many-errors\" name=\"demo-priority\" checked>\
+     <label for=\"many-errors\">Many errors</label>\
+     <ul class=\"actions\"> \
+     <li><a href=\""+value.url+"\"class=\"button\">Vote</a></li>\
+     </ul>\
+     </article>"
+     inHTML += article;
+   });
+   console.log(inHTML);
+   $('#feed').text(data[0].url);
+   $('#article_feed').html(inHTML);
 
   Promise.all([contractDataPromise, networkIdPromise, accountsPromise])
     .then(function initApp(results) {
