@@ -22,8 +22,8 @@ function app() {
           });
          }
        );
-  
-   
+
+
 
   Promise.all([contractDataPromise, networkIdPromise, accountsPromise])
     .then(function initApp(results) {
@@ -38,7 +38,7 @@ function app() {
          throw new Error("Contract not found in selected Ethereum network on MetaMask.");
       }
 
-      var contractAddress = "0x595e89af9c4183c55de864594808b856e91e7932";
+      var contractAddress = "0xfe27aff3e8f81ab09f8acc2a639e3330f93eb93d";
       console.log(contractAddress);
       contract = new web3.eth.Contract(contractData.abi, contractAddress);
       console.log("got to end of first then")
@@ -49,12 +49,19 @@ function app() {
      console.log("https://dapps.stanford.edu/fakenewsdetector/post_article?url="+article+"&deadline="+deadline);
       contract.methods.createArticleMarket(String(article)).call()
       .then(function(result) {
-$.get(
-     "https://dapps.stanford.edu/fakenewsdetector/post_article?url="+article+"&deadline="+deadline
-       
-     );
-          alert("Article Posted!");
+        $.get(
+          "https://dapps.stanford.edu/fakenewsdetector/post_article?url="+article+"&deadline="+deadline
+        );
+        alert("Article Posted!");
       }).catch(function(e) {
+          alert(e);// There was an error! Handle it.
+      });
+
+      contract.methods.getNumArticles().call()
+      .then(function(result) {
+        alert("Num articles", result);
+      })
+      .catch(function(e) {
           alert(e);// There was an error! Handle it.
       });
     }
@@ -68,7 +75,7 @@ $.get(
 	}
       else {
 	alert("Please fill in both fields");
-       } 
+       }
     });
 
     // function vote(article, voteId){
@@ -93,7 +100,7 @@ $.get(
 	alert("Please copy and paste in the article url.");
       } else
       {
-	alert("Thanks for voting!"); 
+	alert("Thanks for voting!");
       }
     });
 

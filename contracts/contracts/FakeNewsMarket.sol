@@ -24,9 +24,11 @@ contract FakeNewsMarket {
         uint8[3] reports;
     }
 
+    event ArticleCreated(address indexed _creator, uint indexed _numberInArray, bytes32 indexed _articleHash);
+
     ArticleMarket[] public markets;
 
-    function createArticleMarket(string _article) public view returns (bool success){
+    function createArticleMarket(string _article) public returns (uint256){
       uint256 initLen = markets.length;
       markets.push(ArticleMarket({
           articleHash: keccak256(_article),
@@ -34,9 +36,9 @@ contract FakeNewsMarket {
           votes: [0,0,0],
           reports: [0,0,0]
       }));
-      if (markets.length == initLen + 1){
-        return true;
-      }
+      emit ArticleCreated(msg.sender, initLen, keccak256(_article));
+      return initLen;
+
     }
 
     function articleExists(string _article) public view returns (bool exists) {
