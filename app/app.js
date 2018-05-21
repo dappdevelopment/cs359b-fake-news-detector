@@ -37,7 +37,7 @@ app.get('/fakenewsdetector/post', function(req,res) {
   var message = {};
   var title = getTitleAtURL(url, function(title) {
     if (title == '') title = url;
-    var sql = 'INSERT INTO articles(url, deadline, title) VALUES("'+url+'","'+deadline+'","'+title'")';
+    var sql = 'INSERT INTO articles(url, deadline, title) VALUES("'+url+'","'+deadline+'","'+title+'")';
     con.query(sql, function (err, results) {
       if (err) throw err;
     });
