@@ -18,11 +18,6 @@ const con = mysql.createConnection({
   insecureAuth : true
 });
 
-
-app.listen(3001, function () {
-  console.log('Example app listening on port 3001!');
-});
-
 app.get('/fakenewsdetector/articles', function(req,res) {
  res.setHeader('Access-Control-Allow-Origin', '*');
  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
