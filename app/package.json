@@ -1,20 +1,11 @@
 {
-  "name": "react-backend",
-  "version": "0.0.0",
-  "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "lite-server"
   },
   "dependencies": {
-    "cookie-parser": "~1.4.3",
-    "debug": "~2.6.9",
-    "express": "~4.16.0",
+    "express": "^4.16.3",
     "get-title-at-url": "^1.1.6",
-    "http-errors": "~1.6.2",
-    "jade": "~1.11.0",
-    "morgan": "~1.9.0",
-    "mysql": "^2.15.0",
-    "sqlite3": "^4.0.0",
-    "web3": "^1.0.0-beta.34"
+    "lite-server": "^2.3.0",
+    "mysql": "^2.15.0"
   }
 }

@@ -44,10 +44,10 @@ contract FakeNewsMarket {
     function articleExists(string _article) public view returns (bool exists) {
       bytes32 hash = keccak256(_article);
       for (uint i=0; i < markets.length; i++) {
-        if (markets[i].articleHash == hash) {
-          return true;
-        }
-      }
-    }
+              if (markets[i].articleHash == hash) {
+                return true;
+              }
+            }
+          }
 
-}
+      }
