@@ -5,17 +5,17 @@ var getTitleAtURL = require('get-title-at-url');
 
 const con = mysql.createConnection({
   /* For server */
-  // host: "localhost",
-  // user: "fakenewsdetector",
-  // password: "KaO62ww0kuom0",
-  // database: "fakenewsdetector"
+   host: "localhost",
+   user: "fakenewsdetector",
+   password: "KaO62ww0kuom0",
+   database: "fakenewsdetector"
 
   /* For local */
-  host: "localhost",
+/*  host: "localhost",
   user: "root",
   password: "pwd",
   database: "fakenewsdetector",
-  insecureAuth : true
+  insecureAuth : true*/
 });
 
 app.get('/fakenewsdetector/articles', function(req,res) {
