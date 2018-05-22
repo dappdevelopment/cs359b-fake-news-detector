@@ -10,26 +10,43 @@ function app() {
   var networkIdPromise = web3.eth.net.getId(); // resolves on the current network id
   var accountsPromise = web3.eth.getAccounts(); // resolves on an array of accounts
 
-  $.get(
-    "http://localhost:3000/articles",
-        // {paramOne : 1, paramX : 'abc'},
-        function(data) {
-          // $('#feed').append(data[0].url);
+  var isLocal = true;
+  var path = "https://dapps.stanford.edu/fakenewsdetector/";
+  if (isLocal) {
+    path = "http://localhost:3000/fakenewsdetector/"
+  }
+   $.get(
+     path + "articles",
+         // {paramOne : 1, paramX : 'abc'},
+         function(data) {
+           //$('#feed').text(data[0].url);
           data.forEach(function(article) {
-            $('#feed').append('<li><a href="'+ article.url +'">'+url+'</a></li>');
+            var inHTML = "";
+            $.each(data, function(index, value) {
+              var article = " \
+              <article> \
+              <header> \
+              <span class=\"date\">Vote Deadline: "+value.deadline+"</span> \
+              <h2><a href=\""+value.url+"\">"+value.title+"</a></h2>\
+              </header>\
+              <!-- <a href=\"#\" class=\"image fit\"><img src=\"images/pic02.jpg\" alt=\"\" /></a> -->\
+              <input type=\"radio\" id=\"no-errors\" name=\"demo-priority\" checked>\
+              <label for=\"no-errors\">No errors</label>\
+              <input type=\"radio\" id=\"some-errors\" name=\"demo-priority\" checked>\
+              <label for=\"some-errors\">Some errors</label>\
+              <input type=\"radio\" id=\"many-errors\" name=\"demo-priority\" checked>\
+              <label for=\"many-errors\">Many errors</label>\
+              <ul class=\"actions\"> \
+              <li><a href=\""+value.url+"\"class=\"button\">Vote</a></li>\
+              </ul>\
+              </article>"
+              inHTML += article;
+            });
+            console.log(inHTML);
+            $('#article_feed').html(inHTML);
           });
-
-
-        }
-      );
-  //
-  // $.get(
-  //   "http://localhost:3000/users",
-  //     // {paramOne : 1, paramX : 'abc'},
-  //     function(data) {
-  //       $('#users').text(data[0].first_name);
-  //     }
-  //   );
+         }
+       );
 
   Promise.all([contractDataPromise, networkIdPromise, accountsPromise])
     .then(function initApp(results) {
@@ -51,9 +68,14 @@ function app() {
     })
     .catch(console.error);
 
-    function postArticle(article) {
+    function postArticle(article, deadline) {
+     console.log(path + "post_article?url="+article+"&deadline="+deadline);
       contract.methods.createArticleMarket(String(article)).call()
       .then(function(result) {
+$.get(
+     path + "post_article?url="+article+"&deadline="+deadline
+
+     );
           alert("Article Posted!");
       }).catch(function(e) {
           alert(e);// There was an error! Handle it.
@@ -61,17 +83,36 @@ function app() {
     }
 
     $("#post_button").click(function(){
-      var article = $("url").val();
-      postArticle(article);
+      $('#url').text('hi');
+      var article = $("#url").val();
+      var deadline = $("#deadline").val();
+      if (article != '' && deadline != '') {
+          postArticle(article, deadline);
+	}
+      else {
+	alert("Please fill in both fields");
+       }
     });
 
-  function refreshBalance() { // Returns web3's PromiEvent
-    // Calling the contract (try with/without declaring view)
-    contract.methods.balanceOf(userAccount).call().then(function (balance) {
-      $('#display').text(balance + " CDT");
-      $("#loader").hide();
+    // function vote(article, voteId){
+    //   console.log("got to here in vote");
+    //   console.log(voteId);
+    // }
+
+    $("#vote_button").click(function() {
+      var article = $("url").val();
+      console.log(article);
+      var vote;
+      if (document.getElementById('vote0').checked) {
+        voteId = 0;
+      }
+      if (document.getElementById('vote1').checked) {
+        voteId = 1;
+      }
+      if (document.getElementById('vote0').checked) {
+        voteId = 2;
+      }
     });
-  }
 
 function transfer(to, amount) {
   console.log(to, amount)

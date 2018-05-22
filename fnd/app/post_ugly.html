@@ -1,6 +1,6 @@
 <html>
   <head>
-      <title>Feed</title>
+      <title>Post Article</title>
       <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
       <script src="https://dapps.stanford.edu/web3/web3-1.0.0-beta.34.min.js"></script>
@@ -8,13 +8,13 @@
       <link rel="stylesheet" type="text/css" href="css/app.css">
    </head>
    <body>
+       <h1>Post Article</h1>
        <div class="container">
-           <h1>Posted Articles</h1>
-           <ul id="feed"></ul>
+           <label for="url" class="col-lg-2 control-label">Article URL</label>
+           <input id="url" type="text">
+           <label for="deadline" class="col-lg-2 control-label">Deadline</label>
+           <input id="deadline" type="text">
+           <button id="post_button">Post</button>
        </div>
-<a href="feed.html">Article Feed</a>
-      <a href="post.html">Post</a>
-      <a href="vote.html">Vote</a>
-
    </body>
 </html>
