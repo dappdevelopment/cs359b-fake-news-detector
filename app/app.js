@@ -19,6 +19,10 @@ const con = mysql.createConnection({
 });
 
 app.get('/fakenewsdetector/articles', function(req,res) {
+ res.setHeader('Access-Control-Allow-Origin', '*');
+ res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+ res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+ res.setHeader('Access-Control-Allow-Credentials', true);
   var sql = 'SELECT * FROM articles ORDER BY deadline';
   con.query(sql, function (err, results) {
     if (err) throw err;
