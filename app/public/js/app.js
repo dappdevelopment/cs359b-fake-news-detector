@@ -9,7 +9,7 @@ function app() {
   var contractDataPromise = $.getJSON('FakeNewsMarket.json');
   var networkIdPromise = web3.eth.net.getId(); // resolves on the current network id
   var accountsPromise = web3.eth.getAccounts(); // resolves on an array of accounts
-  var isLocal = false;
+  var isLocal = true;
   var path = "https://dapps.stanford.edu/fakenewsdetector/";
   if (isLocal) {
     path = "http://localhost:3000/fakenewsdetector/"
