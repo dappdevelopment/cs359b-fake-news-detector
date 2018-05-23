@@ -1,2 +1,4 @@
 # CS359B
-to run: in backend directory, run "npm start". Then in fnd directory, run "npm start". Go to http://localhost:8000
+1. to run locally: npm start to run the front-end. in app directory, do node app.js to run backend.
+2. in app/app.js: where the mysql connection is created, make sure the permissions/params are for local, and not for server
+3. in app/public/app.js: change var isLocal to True so that the path will be correct for queries to the database
