@@ -2,15 +2,15 @@ pragma solidity ^0.4.22;
 
 contract FakeNewsMarket {
 
-    struct Voter {
-        bool voted;  // if true, that person already voted
+    mapping(address => bytes32) reporters;
+
+    struct Bet {
         uint vote;   // 0,1,2
+        uint amount;
     }
 
-    struct Reporter {
-        bool voted;  // if true, that person already voted
+    struct Report {
         uint vote;   // 0,1,2
-        uint weight;
         uint reputation;
     }
 
@@ -18,10 +18,10 @@ contract FakeNewsMarket {
         bytes32 articleHash;
         address creator;
         //uint256 votingPeriod;
-        mapping(address => Voter) voters;
-        mapping(address => Reporter) reporters;
-        uint8[3] votes;
-        uint8[3] reports;
+        mapping(address => Bet) votes;
+        mapping(address => Report) reporters;
+        uint[3] sum_votes;
+        uint[3] sum_reports;
     }
 
     event ArticleCreated(address indexed _creator, uint indexed _numberInArray, bytes32 indexed _articleHash);
@@ -33,13 +33,24 @@ contract FakeNewsMarket {
       markets.push(ArticleMarket({
           articleHash: keccak256(_article),
           creator: msg.sender,
-          votes: [0,0,0],
-          reports: [0,0,0]
+          sum_votes: [uint(0),uint(0),uint(0)],
+          sum_reports: [uint(0),uint(0),uint(0)]
       }));
       emit ArticleCreated(msg.sender, initLen, keccak256(_article));
       return initLen;
-
     }
+
+    // vote function
+    // check if sender's address is already in array, if so, change existing
+    // add address and money to map
+
+    // report function
+    // check if sender's address is in array, if not, block
+    // update report in map
+
+    // assign reporters
+
+    // close market and distribute money
 
     function articleExists(string _article) public view returns (bool exists) {
       bytes32 hash = keccak256(_article);
@@ -47,7 +58,7 @@ contract FakeNewsMarket {
               if (markets[i].articleHash == hash) {
                 return true;
               }
-            }
-          }
-
       }
+    }
+
+  }
