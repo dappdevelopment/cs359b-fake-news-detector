@@ -12,6 +12,7 @@ contract FakeNewsMarket {
     struct Report {
         uint vote;   // 0,1,2
         uint reputation;
+        bool valid;
     }
 
     struct ArticleMarket{
@@ -44,7 +45,20 @@ contract FakeNewsMarket {
     // check if sender's address is already in array, if so, change existing
     // add address and money to map
 
-    // report function
+    function report(string _article, uint _vote, uint _rep) public {
+      ArticleMarket market = markets[keccak256(_article)];
+      if (!market.reporters[msg.sender].valid) {
+        revert("You are not allowed to report!");
+      }
+      else {
+        market.reporters[msg.sender] = Report({
+          vote : _vote,
+          reputation : _rep,
+          valid: true
+        });
+      }
+    }
+
     // check if sender's address is in array, if not, block
     // update report in map
 
