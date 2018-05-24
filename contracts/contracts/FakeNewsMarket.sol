@@ -23,14 +23,15 @@ contract FakeNewsMarket {
         mapping(address => Report) reporters;
         uint[3] sum_votes;
         uint[3] sum_reports;
+        uint[3] sum_bets;
     }
 
-    event ArticleCreated(address indexed _creator, uint indexed _numberInArray, bytes32 indexed _articleHash);
+    /*event ArticleCreated(address indexed _creator, uint indexed _numberInArray, bytes32 indexed _articleHash);*/
 
     mapping(bytes32 => ArticleMarket) public markets;
 
     function createArticleMarket(string _article) public returns (uint256){
-      uint256 initLen = markets.length;
+    /*  uint256 initLen = markets.length;*/
       bytes32 article_hash = keccak256(_article);
       ArticleMarket new_market = ArticleMarket({
           creator: msg.sender,
@@ -43,25 +44,52 @@ contract FakeNewsMarket {
       }
       markets[article_hash] = new_market;
 
-      emit ArticleCreated(msg.sender, initLen, article_hash);
-      return initLen;
+    /*  emit ArticleCreated(msg.sender, initLen, article_hash);*/
+      return 0;
     }
 
     function vote(string _article, uint _vote, uint _amount) public returns (bool success) {
-    // vote function
-    // check if sender's address is already in array, if so, change existing
-    // add address and money to map
-      bytes32 article_hash = keccak256(_article);
-      ArticleMarket market = markets[article_hash];
-      if (market.creator != 0) { //market exists
-        if ()
-        Bet new_bet = Bet({
-            vote: _vote,
-            amount: _amount
-        });
-        market.votes =
-    }
-    }
+        // vote function
+        // check if sender's address is already in array, if so, change existing
+        // add address and money to map
+        bytes32 article_hash = keccak256(_article);
+        ArticleMarket market = markets[article_hash];
+        if (market.creator != 0) { //market exists
+            Bet curr_bet = market.votes[msg.sender];
+            if (curr_bet.amount > 0) {
+                //voter has already bet/voted
+                uint refund = 0;
+                if (msg.value > curr_bet.amount) {
+                    //send back difference (msg.value - curr_bet.amount)
+                    refund = msg.value - curr_bet.amount;
+
+                } else if (msg.value < curr_bet.amount) {
+                    //send back difference (curr_bet.amount - msg.value)
+                    refund = curr_bet.amount - msg.value;
+                } else if (msg.value == curr_bet.amount) {
+                    //reject new money
+                    refund = msg.value;
+                }
+                if (curr_bet.vote != _vote) { //voter is changing previous vote
+                    market.sum_votes[curr_bet.vote] -= 1;
+                    market.sum_bets[curr_bet.vote] -= curr_bet.amount;
+                    market.sum_bets[_vote] = _amount;
+                } else {
+                    market.sum_bets[curr_bet.vote] += (_amount - refund);
+                }
+                refund_voter(msg.sender, refund);
+            } else {
+                market.sum_bets[_vote] += _amount;
+            }
+            market.sum_votes[_vote] += 1;
+            curr_bet.amount = _amount;
+            curr_bet.vote = _vote;
+        }
+        }
+
+        function refund_voter(address _to, uint _amount) {
+            _to.transfer(_amount);
+        }
 
     function report(string _article, uint _vote, uint _rep) public {
       bytes32 hash = keccak256(_article);
@@ -98,12 +126,11 @@ contract FakeNewsMarket {
     // close market and distribute money
 
     function articleExists(string _article) public view returns (bool exists) {
-      bytes32 hash = keccak256(_article);
-      for (uint i=0; i < markets.length; i++) {
-              if (markets[i].articleHash == hash) {
-                return true;
-              }
-      }
+    bytes32 hash = keccak256(_article);
+    if (markets[hash].creator > 0) {
+        return true;
     }
+  }
+
 
   }
