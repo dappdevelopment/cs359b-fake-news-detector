@@ -110,7 +110,7 @@ contract FakeNewsMarket {
     }
 
     // assign reporters
-    function assignReporters() public returns (address[10] assigned){
+    function assignReporters() public view returns (address[10] assigned){
         uint[10] memory indices;
         uint i = 0;
         if (reporters.length == 0) {
