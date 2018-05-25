@@ -49,7 +49,7 @@ contract FakeNewsMarket {
       return 1;
     }
 
-    function vote(string _article, uint _vote, uint _amount) public returns (bool success) {
+    function vote(string _article, uint _vote, uint _amount) public payable returns (bool success) {
         // vote function
         // check if sender's address is already in array, if so, change existing
         // add address and money to map
@@ -86,9 +86,10 @@ contract FakeNewsMarket {
             curr_bet.amount = _amount;
             curr_bet.vote = _vote;
         }
+        return true;
         }
 
-        function refund_voter(address _to, uint _amount) {
+        function refund_voter(address _to, uint _amount) private {
             _to.transfer(_amount);
         }
 
@@ -105,10 +106,10 @@ contract FakeNewsMarket {
 
     // assign reporters
     function assignReporters() public returns (address[10] assigned){
-        uint[10] indices;
+        uint[10] memory indices;
         uint i = 0;
         while (i < 10) {
-          uint random_number = uint(block.blockhash(block.number-1))%reporters.length + 1;
+          uint random_number = uint(blockhash(block.number-1))%reporters.length + 1;
           bool exists = false;
           for (uint j = 0; j < i; j++) {
             if(indices[j] == random_number) {
