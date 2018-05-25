@@ -33,19 +33,20 @@ contract FakeNewsMarket {
     function createArticleMarket(string _article) public returns (uint256){
     /*  uint256 initLen = markets.length;*/
       bytes32 article_hash = keccak256(_article);
-      ArticleMarket new_market = ArticleMarket({
+      ArticleMarket memory new_market = ArticleMarket({
           creator: msg.sender,
           sum_votes: [uint(0),uint(0),uint(0)],
-          sum_reports: [uint(0),uint(0),uint(0)]
+          sum_reports: [uint(0),uint(0),uint(0)],
+          sum_bets: [uint(0),uint(0),uint(0)]
       });
-      address[10] reporterAddresses = assignReporters();
-      for (uint i = 0; i < 10; i++){
-        new_market.reporters[reporterAddresses[i]] = Report({valid: true}); //initialize reports
-      }
       markets[article_hash] = new_market;
+      address[10] memory reporterAddresses = assignReporters();
+      for (uint i = 0; i < 10; i++){
+        markets[article_hash].reporters[reporterAddresses[i]] = Report({valid: true, vote: 0, reputation: 0}); //initialize reports
+      }
 
     /*  emit ArticleCreated(msg.sender, initLen, article_hash);*/
-      return 0;
+      return 1;
     }
 
     function vote(string _article, uint _vote, uint _amount) public returns (bool success) {
@@ -53,9 +54,9 @@ contract FakeNewsMarket {
         // check if sender's address is already in array, if so, change existing
         // add address and money to map
         bytes32 article_hash = keccak256(_article);
-        ArticleMarket market = markets[article_hash];
+        ArticleMarket storage market = markets[article_hash];
         if (market.creator != 0) { //market exists
-            Bet curr_bet = market.votes[msg.sender];
+            Bet storage curr_bet = market.votes[msg.sender];
             if (curr_bet.amount > 0) {
                 //voter has already bet/voted
                 uint refund = 0;
