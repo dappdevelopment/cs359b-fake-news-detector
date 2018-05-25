@@ -53,7 +53,7 @@ contract FakeNewsMarket {
       return 1;
     }
 
-    function vote(string _article, uint _vote, uint _amount) public payable returns (bool success) {
+    function vote(string _article, uint _vote) public payable returns (bool success) {
         // vote function
         // check if sender's address is already in array, if so, change existing
         // add address and money to map
@@ -78,26 +78,27 @@ contract FakeNewsMarket {
                 if (curr_bet.vote != _vote) { //voter is changing previous vote
                     market.sum_votes[curr_bet.vote] -= 1;
                     market.sum_bets[curr_bet.vote] -= curr_bet.amount;
-                    market.sum_bets[_vote] = _amount;
+                    market.sum_bets[_vote] = msg.value;
                 } else {
-                    market.sum_bets[curr_bet.vote] += (_amount - refund);
+                    market.sum_bets[curr_bet.vote] += (msg.value - refund);
                 }
                 refund_voter(msg.sender, refund);
+
             } else {
-                market.sum_bets[_vote] += _amount;
+                market.sum_bets[_vote] += msg.value;
             }
             market.sum_votes[_vote] += 1;
-            curr_bet.amount = _amount;
+            curr_bet.amount = msg.value;
             curr_bet.vote = _vote;
         }
         return true;
         }
 
-        function refund_voter(address _to, uint _amount) private {
-            _to.transfer(_amount);
-        }
+    function refund_voter(address _to, uint _amount) private {
+        _to.transfer(_amount);
+    }
 
-    function report(string _article, uint _vote, uint _rep) public {
+    function report(string _article, uint _vote, uint _rep) {
       bytes32 hash = keccak256(_article);
       require(markets[hash].reporters[msg.sender].valid == true);
       markets[hash].reporters[msg.sender] = Report({
@@ -116,7 +117,7 @@ contract FakeNewsMarket {
             return assigned;
         }
         while (i < 10) {
-          uint random_number = uint(block.blockhash(block.number-1))%reporters.length + 1;
+          uint random_number = uint(blockhash(block.number-1))%reporters.length + 1;
           bool exists = false;
           for (uint j = 0; j < i; j++) {
             if(indices[j] == random_number) {
@@ -128,7 +129,6 @@ contract FakeNewsMarket {
             assigned[i] = reporters[random_number];
             i += 1;
           }
-        i+=1;
         }
         return assigned;
     }
@@ -140,6 +140,7 @@ contract FakeNewsMarket {
     if (markets[hash].creator > 0) {
         return true;
     }
+
   }
 
 
