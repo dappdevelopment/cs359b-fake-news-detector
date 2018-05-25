@@ -31,7 +31,6 @@ contract FakeNewsMarket {
     mapping(bytes32 => ArticleMarket) public markets;
 
     function createArticleMarket(string _article) public returns (uint256){
-    /*  uint256 initLen = markets.length;*/
       bytes32 article_hash = keccak256(_article);
       ArticleMarket memory new_market = ArticleMarket({
           creator: msg.sender,
@@ -41,8 +40,13 @@ contract FakeNewsMarket {
       });
       markets[article_hash] = new_market;
       address[10] memory reporterAddresses = assignReporters();
+      Report memory report = Report({
+         valid: true,
+         vote: 0,
+         reputation: 0
+      });
       for (uint i = 0; i < 10; i++){
-        markets[article_hash].reporters[reporterAddresses[i]] = Report({valid: true, vote: 0, reputation: 0}); //initialize reports
+        markets[article_hash].reporters[reporterAddresses[i]]= report; //initialize reports
       }
 
     /*  emit ArticleCreated(msg.sender, initLen, article_hash);*/
@@ -108,8 +112,11 @@ contract FakeNewsMarket {
     function assignReporters() public returns (address[10] assigned){
         uint[10] memory indices;
         uint i = 0;
+        if (reporters.length == 0) {
+            return assigned;
+        }
         while (i < 10) {
-          uint random_number = uint(blockhash(block.number-1))%reporters.length + 1;
+          uint random_number = uint(block.blockhash(block.number-1))%reporters.length + 1;
           bool exists = false;
           for (uint j = 0; j < i; j++) {
             if(indices[j] == random_number) {
@@ -121,6 +128,7 @@ contract FakeNewsMarket {
             assigned[i] = reporters[random_number];
             i += 1;
           }
+        i+=1;
         }
         return assigned;
     }
