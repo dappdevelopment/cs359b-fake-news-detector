@@ -18,7 +18,8 @@ contract FakeNewsMarket {
 
     struct ArticleMarket{
         address creator;
-        //uint256 votingPeriod;
+        uint256 deadline;
+        bool is_open;
         mapping(address => Bet) votes;
         mapping(address => Report) reporters;
         uint[3] sum_votes;
@@ -30,10 +31,12 @@ contract FakeNewsMarket {
 
     mapping(bytes32 => ArticleMarket) public markets;
 
-    function createArticleMarket(string _article) public returns (uint256){
+    function createArticleMarket(string _article, uint256 _deadline) public returns (uint256){
       bytes32 article_hash = keccak256(_article);
       ArticleMarket memory new_market = ArticleMarket({
           creator: msg.sender,
+          deadline: _deadline,
+          is_open: true,
           sum_votes: [uint(0),uint(0),uint(0)],
           sum_reports: [uint(0),uint(0),uint(0)],
           sum_bets: [uint(0),uint(0),uint(0)]
@@ -136,9 +139,17 @@ contract FakeNewsMarket {
         return assigned;
     }
 
-    function closeMarket() {
-        // close market and distribute money
+    function closeMarket(string _article) {
+        //check deadline
+        bytes32 hash = keccak256(_article);
+        ArticleMarket storage market = markets[hash];
+        if (market.is_open) {
+        //determine winning answer from reporters
 
+        //redistribute money
+
+        //close market
+        }
     }
 
     function articleExists(string _article) public view returns (bool exists) {
@@ -161,4 +172,6 @@ contract FakeNewsMarket {
             return markets[hash].sum_bets;
         }
     }
+
+
   }
