@@ -57,6 +57,9 @@ contract FakeNewsMarket {
         // vote function
         // check if sender's address is already in array, if so, change existing
         // add address and money to map
+        if (msg.value == 0) {
+            return false;
+        }
         bytes32 article_hash = keccak256(_article);
         ArticleMarket storage market = markets[article_hash];
         if (market.creator != 0) { //market exists
@@ -110,7 +113,7 @@ contract FakeNewsMarket {
     }
 
     // assign reporters
-    function assignReporters() public view returns (address[10] assigned){
+    function assignReporters() public returns (address[10] assigned){
         uint[10] memory indices;
         uint i = 0;
         if (reporters.length == 0) {
@@ -133,15 +136,29 @@ contract FakeNewsMarket {
         return assigned;
     }
 
-    // close market and distribute money
+    function closeMarket() {
+        // close market and distribute money
+
+    }
 
     function articleExists(string _article) public view returns (bool exists) {
     bytes32 hash = keccak256(_article);
     if (markets[hash].creator > 0) {
         return true;
     }
+    }
 
-  }
+    function getVotes(string _article) public view returns (uint[3] sum_votes) {
+        bytes32 hash = keccak256(_article);
+        if (markets[hash].creator > 0) {
+            return markets[hash].sum_votes;
+        }
+    }
 
-
+    function getBets(string _article) public view returns (uint[3] sum_bets) {
+        bytes32 hash = keccak256(_article);
+        if (markets[hash].creator > 0) {
+            return markets[hash].sum_bets;
+        }
+    }
   }
