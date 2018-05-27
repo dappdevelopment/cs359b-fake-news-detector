@@ -157,7 +157,7 @@ contract FakeNewsMarket {
         //TODO: check deadline
         bytes32 hash = keccak256(_article);
         ArticleMarket storage market = markets[hash];
-        if (market.is_open) {
+        if (market.deadline < now && market.is_open) {
         //determine winning answer from reporters
         uint256 reports_0 = market.sum_reports[0];
         uint256 reports_1 = market.sum_reports[1];
