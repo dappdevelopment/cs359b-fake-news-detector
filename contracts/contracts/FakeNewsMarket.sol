@@ -13,7 +13,7 @@ contract FakeNewsMarket {
     struct Report {
         uint vote;   // 0,1,2
         uint reputation;
-        bool valid;
+        bool is_valid;
     }
 
     struct ArticleMarket{
@@ -21,7 +21,9 @@ contract FakeNewsMarket {
         uint256 deadline;
         bool is_open;
         mapping(address => Bet) votes;
-        mapping(address => Report) reporters;
+        mapping(address => Report) reports;
+        address[] voters;
+        address[] reporters;
         uint[3] sum_votes;
         uint[3] sum_reports;
         uint[3] sum_bets;
@@ -39,17 +41,20 @@ contract FakeNewsMarket {
           is_open: true,
           sum_votes: [uint(0),uint(0),uint(0)],
           sum_reports: [uint(0),uint(0),uint(0)],
-          sum_bets: [uint(0),uint(0),uint(0)]
+          sum_bets: [uint(0),uint(0),uint(0)],
+          voters: new address[](0),
+          reporters: new address[](0)
       });
       markets[article_hash] = new_market;
       address[10] memory reporterAddresses = assignReporters();
       Report memory report = Report({
-         valid: true,
+         is_valid: true,
          vote: 0,
          reputation: 0
       });
       for (uint i = 0; i < 10; i++){
-        markets[article_hash].reporters[reporterAddresses[i]]= report; //initialize reports
+        markets[article_hash].reporters.push(reporterAddresses[i]);
+        markets[article_hash].reports[reporterAddresses[i]]= report; //initialize reports
       }
 
     /*  emit ArticleCreated(msg.sender, initLen, article_hash);*/
@@ -92,6 +97,7 @@ contract FakeNewsMarket {
 
             } else {
                 market.sum_bets[_vote] += msg.value;
+                market.voters.push(msg.sender);
             }
             market.sum_votes[_vote] += 1;
             curr_bet.amount = msg.value;
@@ -106,11 +112,11 @@ contract FakeNewsMarket {
 
     function report(string _article, uint _vote, uint _rep) {
       bytes32 hash = keccak256(_article);
-      require(markets[hash].reporters[msg.sender].valid == true);
-      markets[hash].reporters[msg.sender] = Report({
+      require(markets[hash].reports[msg.sender].is_valid == true);
+      markets[hash].reports[msg.sender] = Report({
         vote : _vote,
         reputation : _rep,
-        valid: true
+        is_valid: true
       });
       //what to do if updating reputation?
     }
@@ -148,15 +154,59 @@ contract FakeNewsMarket {
     }
 
     function closeMarket(string _article) {
-        //check deadline
+        //TODO: check deadline
         bytes32 hash = keccak256(_article);
         ArticleMarket storage market = markets[hash];
         if (market.is_open) {
         //determine winning answer from reporters
-
-        //redistribute money
-
+        uint256 reports_0 = market.sum_reports[0];
+        uint256 reports_1 = market.sum_reports[1];
+        uint256 reports_2 = market.sum_reports[2];
+        //set vote 0 to be the winner
+        uint8 consensus = 0;
+        uint256 max_reports = reports_0;
+        if (max_reports < reports_1 && reports_1 < reports_2) {
+            //vote 2 is the winner
+            consensus = 2;
+            max_reports = reports_2;
+        } else if (max_reports < reports_1 && reports_1 > reports_2) {
+            //vote 1 is the winner
+            consensus = 1;
+            max_reports = reports_1;
+        }
+        //TODO: handle case where some of the # reports is equal
+        uint256 winnings = market.sum_bets[0] + market.sum_bets[1] + market.sum_bets[2];
+        uint256 reporter_winnings = winnings/10;
+        uint256 correct_voter_winnings = winnings - reporter_winnings;
+        distributeWinningsToReporters(market, consensus, reporter_winnings);
+        distributeWinningsToVoters(market, consensus, correct_voter_winnings);
         //close market
+        market.is_open = false;
+        }
+    }
+
+    function distributeWinningsToReporters(ArticleMarket storage _market, uint8 _consensus, uint256 _reporterWinnings) private {
+        uint256 num_reporters = _market.reporters.length;
+        for(uint i;i<num_reporters;i++) {
+            address reporter = _market.reporters[i];
+            Report storage report = _market.reports[reporter];
+            if (report.is_valid && report.vote == _consensus) {
+                reporter.transfer(_reporterWinnings/num_reporters);
+            }
+            i++;
+        }
+    }
+
+    function distributeWinningsToVoters(ArticleMarket storage _market, uint8 _consensus, uint256 _correctVoterWinnings) private {
+        uint256 num_voters = _market.voters.length;
+        for(uint i;i<num_voters;i++) {
+            address voter = _market.voters[i];
+            Bet storage voter_bet = _market.votes[voter];
+            if (voter_bet.vote == _consensus) {
+                uint256 voter_winnings = _correctVoterWinnings * voter_bet.amount / _market.sum_bets[_consensus];
+                voter.transfer(voter_winnings);
+            }
+            i++;
         }
     }
 
