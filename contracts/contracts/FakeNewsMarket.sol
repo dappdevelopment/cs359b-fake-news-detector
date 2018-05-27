@@ -115,13 +115,21 @@ contract FakeNewsMarket {
       //what to do if updating reputation?
     }
 
-    // assign reporters
+    function addReporter(address _address, string email) {
+      bytes32 hash = keccak256(email);
+      reporters.push(_address);
+      reportersEmails[_address] = hash;
+    }
+
     function assignReporters() public returns (address[10] assigned){
         uint[10] memory indices;
-        uint i = 0;
-        if (reporters.length == 0) {
+        if (reporters.length < 10) {
+            for (uint r = 0; r < reporters.length; r++){
+              assigned[r] = reporters[r]; //copy whatever reporters exist into addresses
+            }
             return assigned;
         }
+        uint i = 0;
         while (i < 10) {
           uint random_number = uint(blockhash(block.number-1))%reporters.length + 1;
           bool exists = false;
