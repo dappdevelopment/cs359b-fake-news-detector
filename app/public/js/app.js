@@ -70,7 +70,9 @@ function app() {
 
      console.log(path + "post_article?url="+article+"&deadline="+deadline);
      console.log(Date.parse(deadline));
-     contract.methods.createArticleMarket(String(article),Date.parse(deadline)).call()
+     console.log(contract);
+     console.log(userAccount);
+     contract.methods.createArticleMarket(article, Date.parse(deadline)).send({from: userAccount})
       .then(function(result) {
         $.get(
           path + "post_article?url="+article+"&deadline="+deadline
