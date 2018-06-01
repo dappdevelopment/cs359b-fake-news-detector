@@ -59,7 +59,7 @@ function app() {
          throw new Error("Contract not found in selected Ethereum network on MetaMask.");
       }
 
-      var contractAddress = "0x4553e22d3143e86C71085642194435B86e542c5D";
+      var contractAddress = "0xed19Cc7872aEEc19633e1BDD6877C2d39548ACF0";
       contract = new web3.eth.Contract(contractData.abi, contractAddress);
       console.log("Contract Address:", contract);
       console.log("got to end of first then")
