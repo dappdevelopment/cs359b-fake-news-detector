@@ -41,7 +41,6 @@ function app() {
               </article>"
               inHTML += article;
             });
-            console.log(inHTML);
             $('#article_feed').html(inHTML);
           });
          }
@@ -70,21 +69,14 @@ function app() {
     function postArticle(article, deadline) {
 
      console.log(path + "post_article?url="+article+"&deadline="+deadline);
-      contract.methods.createArticleMarket(String(article)).call()
+     console.log(Date.parse(deadline));
+     contract.methods.createArticleMarket(String(article),Date.parse(deadline)).call()
       .then(function(result) {
-$.get(
-     path + "post_article?url="+article+"&deadline="+deadline
-     );
+        $.get(
+          path + "post_article?url="+article+"&deadline="+deadline
+        );
      alert("Article Posted!");
-     }).catch(function(e) {
-          alert(e);// There was an error! Handle it.
-      });
-
-      contract.methods.getNumArticles().call()
-      .then(function(result) {
-        alert("Num articles", result);
-      })
-      .catch(function(e) {
+      }).catch(function(e) {
           alert(e);// There was an error! Handle it.
       });
     }
