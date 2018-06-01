@@ -29,12 +29,13 @@ contract FakeNewsMarket {
         uint[3] sum_bets;
     }
 
-    /*event ArticleCreated(address indexed _creator, uint indexed _numberInArray, bytes32 indexed _articleHash);*/
+    event ArticleCreated(address indexed _creator, uint indexed _numberInArray, bytes32 indexed _articleHash);
 
     mapping(bytes32 => ArticleMarket) public markets;
+    uint public numArticles = 0;
 
     function createArticleMarket(string _article, uint256 _deadline) public returns (uint256){
-      bytes32 article_hash = keccak256(_article);
+      bytes32 article_hash = keccak256(abi.encodePacked(_article));
       ArticleMarket memory new_market = ArticleMarket({
           creator: msg.sender,
           deadline: _deadline,
@@ -57,7 +58,8 @@ contract FakeNewsMarket {
         markets[article_hash].reports[reporterAddresses[i]]= report; //initialize reports
       }
 
-    /*  emit ArticleCreated(msg.sender, initLen, article_hash);*/
+      emit ArticleCreated(msg.sender, numArticles, article_hash);
+      numArticles += 1;
       return 1;
     }
 
@@ -68,7 +70,7 @@ contract FakeNewsMarket {
         if (msg.value == 0) {
             return false;
         }
-        bytes32 article_hash = keccak256(_article);
+        bytes32 article_hash = keccak256(abi.encodePacked(_article));
         ArticleMarket storage market = markets[article_hash];
         if (market.creator != 0) { //market exists
             Bet storage curr_bet = market.votes[msg.sender];
@@ -111,7 +113,7 @@ contract FakeNewsMarket {
     }
 
     function report(string _article, uint _vote, uint _rep) {
-      bytes32 hash = keccak256(_article);
+      bytes32 hash = keccak256(abi.encodePacked(_article));
       require(markets[hash].reports[msg.sender].is_valid == true);
       markets[hash].reports[msg.sender] = Report({
         vote : _vote,
@@ -122,7 +124,7 @@ contract FakeNewsMarket {
     }
 
     function addReporter(address _address, string email) {
-      bytes32 hash = keccak256(email);
+      bytes32 hash = keccak256(abi.encodePacked(email));
       reporters.push(_address);
       reportersEmails[_address] = hash;
     }
@@ -155,7 +157,7 @@ contract FakeNewsMarket {
 
     function closeMarket(string _article) {
         //TODO: check deadline
-        bytes32 hash = keccak256(_article);
+        bytes32 hash = keccak256(abi.encodePacked(_article));
         ArticleMarket storage market = markets[hash];
         if (market.deadline < now && market.is_open) {
         //determine winning answer from reporters
@@ -189,8 +191,8 @@ contract FakeNewsMarket {
         uint256 num_reporters = _market.reporters.length;
         for(uint i;i<num_reporters;i++) {
             address reporter = _market.reporters[i];
-            Report storage report = _market.reports[reporter];
-            if (report.is_valid && report.vote == _consensus) {
+            Report storage inReport = _market.reports[reporter];
+            if (inReport.is_valid && inReport.vote == _consensus) {
                 reporter.transfer(_reporterWinnings/num_reporters);
             }
             i++;
@@ -211,21 +213,21 @@ contract FakeNewsMarket {
     }
 
     function articleExists(string _article) public view returns (bool exists) {
-    bytes32 hash = keccak256(_article);
+    bytes32 hash = keccak256(abi.encodePacked(_article));
     if (markets[hash].creator > 0) {
         return true;
     }
     }
 
     function getVotes(string _article) public view returns (uint[3] sum_votes) {
-        bytes32 hash = keccak256(_article);
+        bytes32 hash = keccak256(abi.encodePacked(_article));
         if (markets[hash].creator > 0) {
             return markets[hash].sum_votes;
         }
     }
 
     function getBets(string _article) public view returns (uint[3] sum_bets) {
-        bytes32 hash = keccak256(_article);
+        bytes32 hash = keccak256(abi.encodePacked(_article));
         if (markets[hash].creator > 0) {
             return markets[hash].sum_bets;
         }

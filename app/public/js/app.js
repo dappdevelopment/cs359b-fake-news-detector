@@ -60,8 +60,8 @@ function app() {
       }
 
       var contractAddress = "0x4553e22d3143e86C71085642194435B86e542c5D";
-      console.log(contractAddress);
       contract = new web3.eth.Contract(contractData.abi, contractAddress);
+      console.log("Contract Address:", contract);
       console.log("got to end of first then")
     })
     .catch(console.error);
@@ -69,15 +69,14 @@ function app() {
     function postArticle(article, deadline) {
 
      console.log(path + "post_article?url="+article+"&deadline="+deadline);
+     console.log(article.valueof());
      console.log(Date.parse(deadline));
-     console.log(contract);
-     console.log(userAccount);
-     contract.methods.createArticleMarket(article, Date.parse(deadline)).send({from: userAccount})
+     contract.methods.createArticleMarket(article.valueof(),Date.parse(deadline)).send({from:userAccount})
       .then(function(result) {
         $.get(
           path + "post_article?url="+article+"&deadline="+deadline
         );
-     alert("Article Posted!");
+        alert("Article Posted!");
       }).catch(function(e) {
           alert(e);// There was an error! Handle it.
       });
