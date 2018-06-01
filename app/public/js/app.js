@@ -69,9 +69,9 @@ function app() {
     function postArticle(article, deadline) {
 
      console.log(path + "post_article?url="+article+"&deadline="+deadline);
-     console.log(article.valueof());
+     console.log(article.valueOf());
      console.log(Date.parse(deadline));
-     contract.methods.createArticleMarket(article.valueof(),Date.parse(deadline)).send({from:userAccount})
+     contract.methods.createArticleMarket(article.valueOf(),Date.parse(deadline)).send({from:userAccount})
       .then(function(result) {
         $.get(
           path + "post_article?url="+article+"&deadline="+deadline
