@@ -149,27 +149,29 @@ $("#button").click(function() {
   transfer(toAddress, amount);
 });
 
-$("#mint_button").click(function() {
+$("#vote_button").click(function() {
+  var url = $("#url").val();
+  var vote = $('input[name=vote]:checked').val();
   var amount = $("#amount").val();
-  mint(amount);
+  contract.methods.vote(url.valueOf(), vote).send({from:userAccount, value: web3.utils.toWei(amount, "ether")})
+   .then(function(result) {
+     alert("Voted !");
+   }).catch(function(e) {
+       alert(e);// There was an error! Handle it.
+   });
 });
 
-$("#create_account_button").click(function() {
-  var first_name = $("#first_name").val();
-  var last_name = $("#last_name").val();
-  var password = $("#password").val();
-  // $.get(
-  //   "http://localhost:3000/users",
-  //   // {paramOne : 1, paramX : 'abc'},
-  //   function(data) {
-  //     for (var i in data)
-  //     {
-  //       console.log(data[i].first_name)
-  //     }
-  //
-  //   }
-  // );
-});
+$("#signup_button").click(function() {
+  var email = $("#email").val();
+  console.log(email);
+  contract.methods.addReporter(userAccount, email.valueOf()).send({from:userAccount})
+   .then(function(result) {
+     alert("Signed up as a reporter!");
+   }).catch(function(e) {
+       alert(e);// There was an error! Handle it.
+   });
+ });
+
 
 
 }

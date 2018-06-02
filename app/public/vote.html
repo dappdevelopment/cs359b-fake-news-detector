@@ -47,17 +47,19 @@
                  <input id="url" type="text">
 
                  <div class="4u 12u$(small)">
-                   <input type="radio" id="vote0" name="vote">
+                   <input type="radio" id="vote0" name="vote" value=0>
                    <label for="vote0">No errors</label>
                  </div>
                  <div class="4u 12u$(small)">
-                   <input type="radio" id="vote1" name="vote">
+                   <input type="radio" id="vote1" name="vote" value=1>
                    <label for="vote1">1-3 errors</label>
                  </div>
                  <div class="4u$ 12u$(small)">
-                   <input type="radio" id="vote2" name="vote">
+                   <input type="radio" id="vote2" name="vote" value=2>
                    <label for="vote2">FAKE news!</label>
                  </div>
+								 <label for="amount" class="col-lg-2 control-label">Bet Amount (ether)</label>
+								 <input id="amount" type="text">
                  <div>
                    <button id="vote_button">Vote</button>
                  </div>
