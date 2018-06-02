@@ -63,6 +63,8 @@ function app() {
       contract = new web3.eth.Contract(contractData.abi, contractAddress);
       console.log("Contract Address:", contract);
       console.log("got to end of first then")
+      $("#loader").hide();
+
     })
     .catch(console.error);
 
@@ -76,6 +78,8 @@ function app() {
         $.get(
           path + "post_article?url="+article+"&deadline="+deadline
         );
+        $("#loader").hide();
+
         alert("Article Posted!");
       }).catch(function(e) {
           alert(e);// There was an error! Handle it.
@@ -83,7 +87,8 @@ function app() {
     }
 
     $("#post_button").click(function(){
-      $('#url').text('hi');
+      $("#loader").show();
+      console.log("hit post button");
       var article = $("#url").val();
       var deadline = $("#deadline").val();
       if (article != '' && deadline != '') {
@@ -98,27 +103,6 @@ function app() {
     //   console.log("got to here in vote");
     //   console.log(voteId);
     // }
-
-    $("#vote_button").click(function() {
-      var article = $('#url').val();
-      console.log(article);
-      var vote;
-      if (document.getElementById('vote0').checked) {
-        voteId = 0;
-      }
-      if (document.getElementById('vote1').checked) {
-        voteId = 1;
-      }
-      if (document.getElementById('vote0').checked) {
-        voteId = 2;
-      }
-      if (article == '') {
-	alert("Please copy and paste in the article url.");
-      } else
-      {
-	alert("Thanks for voting!");
-      }
-    });
 
 function transfer(to, amount) {
   console.log(to, amount)
@@ -153,12 +137,16 @@ $("#vote_button").click(function() {
   var url = $("#url").val();
   var vote = $('input[name=vote]:checked').val();
   var amount = $("#amount").val();
+  if (amount <= 0) {
+    alert("You must bet a sum greater than 0.");// There was an error! Handle it.
+  } else {
   contract.methods.vote(url.valueOf(), vote).send({from:userAccount, value: web3.utils.toWei(amount, "ether")})
    .then(function(result) {
      alert("Voted !");
    }).catch(function(e) {
        alert(e);// There was an error! Handle it.
    });
+ }
 });
 
 $("#signup_button").click(function() {
