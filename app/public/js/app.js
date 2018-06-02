@@ -67,7 +67,6 @@ function app() {
     .catch(console.error);
 
     function postArticle(article, deadline) {
-
      console.log(path + "post_article?url="+article+"&deadline="+deadline);
      console.log(article.valueOf());
      console.log(Date.parse(deadline));
@@ -82,16 +81,46 @@ function app() {
       });
     }
 
+    function reportArticle(article, report) {
+     contract.methods.report(article.valueOf(), report, 0).send({from:userAccount})
+      .then(function(result) {
+        alert("Successfully Reported!");
+      }).catch(function(e) {
+          alert(e);// There was an error! Handle it.
+      });
+    }
+
+    $("#report_button").click(function(){
+      var article = $("#url").val();
+      var report;
+      if (document.getElementById('report0').checked) {
+        voteId = 0;
+      }
+      if (document.getElementById('report1').checked) {
+        voteId = 1;
+      }
+      if (document.getElementById('report2').checked) {
+        voteId = 2;
+      }
+
+      if (article != '' && (report == 0 || report == 1 || report == 2)) {
+        reportArticle(article, report);
+      }
+      else {
+        alert("Invalid input!")
+      }
+    });
+
     $("#post_button").click(function(){
       $('#url').text('hi');
       var article = $("#url").val();
       var deadline = $("#deadline").val();
       if (article != '' && deadline != '') {
           postArticle(article, deadline);
-	}
+	    }
       else {
-	alert("Please fill in both fields");
-       }
+	       alert("Please fill in both fields");
+      }
     });
 
     // function vote(article, voteId){
@@ -102,21 +131,22 @@ function app() {
     $("#vote_button").click(function() {
       var article = $('#url').val();
       console.log(article);
-      var vote;
+      var voteId;
       if (document.getElementById('vote0').checked) {
         voteId = 0;
       }
       if (document.getElementById('vote1').checked) {
         voteId = 1;
       }
-      if (document.getElementById('vote0').checked) {
+      if (document.getElementById('vote2').checked) {
         voteId = 2;
       }
       if (article == '') {
-	alert("Please copy and paste in the article url.");
+	       alert("Please copy and paste in the article url.");
       } else
       {
-	alert("Thanks for voting!");
+        voteArticle(article, voteId);
+	      alert("Thanks for voting!");
       }
     });
 
