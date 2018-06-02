@@ -27,6 +27,7 @@ contract FakeNewsMarket {
         uint[3] sum_votes;
         uint[3] sum_reports;
         uint[3] sum_bets;
+        uint[3] sum_rep; //sum of reputation
     }
 
     event ArticleCreated(address indexed _creator, uint indexed _numberInArray, bytes32 indexed _articleHash);
@@ -43,6 +44,7 @@ contract FakeNewsMarket {
           sum_votes: [uint(0),uint(0),uint(0)],
           sum_reports: [uint(0),uint(0),uint(0)],
           sum_bets: [uint(0),uint(0),uint(0)],
+          sum_rep: [uint(0), unit(0), uint(0)],
           voters: new address[](0),
           reporters: new address[](0)
       });
@@ -120,7 +122,7 @@ contract FakeNewsMarket {
         reputation : _rep,
         is_valid: true
       });
-      //what to do if updating reputation?
+      sum_rep[_vote] += _rep;
     }
 
     function addReporter(address _address, string email) {
@@ -210,6 +212,11 @@ contract FakeNewsMarket {
             }
             i++;
         }
+    }
+
+    //TODO: distribute reputation points
+    function distributeReputation(ArticleMarket storage _market, uint8 _consensu, uint256 _correctReporterWinnings) private {
+        
     }
 
     function articleExists(string _article) public view returns (bool exists) {
