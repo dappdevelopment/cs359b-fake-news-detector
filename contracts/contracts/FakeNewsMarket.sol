@@ -2,8 +2,15 @@ pragma solidity ^0.4.22;
 
 contract FakeNewsMarket {
 
-    mapping(address => bytes32) reportersEmails; //address to email
+    mapping(address => Reporter) reportersData; //address to email
     address[] reporters;
+    uint256 minRep = 10;
+
+    struct Reporter {
+        bytes32 email;
+        uint reputation;
+        bool is_valid;
+    }
 
     struct Bet {
         uint vote;   // 0,1,2
@@ -44,7 +51,7 @@ contract FakeNewsMarket {
           sum_votes: [uint(0),uint(0),uint(0)],
           sum_reports: [uint(0),uint(0),uint(0)],
           sum_bets: [uint(0),uint(0),uint(0)],
-          sum_rep: [uint(0), unit(0), uint(0)],
+          sum_rep: [uint(0), uint(0), uint(0)],
           voters: new address[](0),
           reporters: new address[](0)
       });
@@ -122,16 +129,20 @@ contract FakeNewsMarket {
         reputation : _rep,
         is_valid: true
       });
-      sum_rep[_vote] += _rep;
+      markets[hash].sum_rep[_vote] += _rep;
     }
 
     function addReporter(address _address, string email) {
       bytes32 hash = keccak256(abi.encodePacked(email));
       reporters.push(_address);
-      reportersEmails[_address] = hash;
+      reportersData[_address] = Reporter({
+        email : hash,
+        reputation: 15, //starting reputation
+        is_valid: true
+      });
     }
 
-    function assignReporters() public returns (address[10] assigned){
+    function assignReporters() private returns (address[10] assigned){
         uint[10] memory indices;
         if (reporters.length < 10) {
             for (uint r = 0; r < reporters.length; r++){
@@ -162,31 +173,36 @@ contract FakeNewsMarket {
         bytes32 hash = keccak256(abi.encodePacked(_article));
         ArticleMarket storage market = markets[hash];
         if (market.deadline < now && market.is_open) {
-        //determine winning answer from reporters
-        uint256 reports_0 = market.sum_reports[0];
-        uint256 reports_1 = market.sum_reports[1];
-        uint256 reports_2 = market.sum_reports[2];
-        //set vote 0 to be the winner
-        uint8 consensus = 0;
-        uint256 max_reports = reports_0;
-        if (max_reports < reports_1 && reports_1 < reports_2) {
-            //vote 2 is the winner
-            consensus = 2;
-            max_reports = reports_2;
-        } else if (max_reports < reports_1 && reports_1 > reports_2) {
-            //vote 1 is the winner
-            consensus = 1;
-            max_reports = reports_1;
-        }
-        //TODO: handle case where some of the # reports is equal
-        uint256 winnings = market.sum_bets[0] + market.sum_bets[1] + market.sum_bets[2];
-        uint256 reporter_winnings = winnings/10;
-        uint256 correct_voter_winnings = winnings - reporter_winnings;
-        distributeWinningsToReporters(market, consensus, reporter_winnings);
-        distributeWinningsToVoters(market, consensus, correct_voter_winnings);
-        //close market
-        market.is_open = false;
-        }
+          //determine winning answer from reporters
+          uint256 reports_0 = market.sum_reports[0];
+          uint256 reports_1 = market.sum_reports[1];
+          uint256 reports_2 = market.sum_reports[2];
+          //set vote 0 to be the winner
+          uint8 consensus = 0;
+          uint256 max_reports = reports_0;
+          uint256 rep_redistribute = market.sum_rep[1] + market.sum_rep[2];
+          if (max_reports < reports_1 && reports_1 < reports_2) {
+              //vote 2 is the winner
+              consensus = 2;
+              max_reports = reports_2;
+              rep_redistribute = market.sum_rep[0] + market.sum_rep[1];
+          } else if (max_reports < reports_1 && reports_1 > reports_2) {
+              //vote 1 is the winner
+              consensus = 1;
+              max_reports = reports_1;
+              rep_redistribute = market.sum_rep[0] + market.sum_rep[2];
+          }
+          //TODO: handle case where some of the # reports is equal
+          uint256 winnings = market.sum_bets[0] + market.sum_bets[1] + market.sum_bets[2];
+          uint256 reporter_winnings = winnings/10;
+          uint256 correct_voter_winnings = winnings - reporter_winnings;
+
+          distributeWinningsToReporters(market, consensus, reporter_winnings);
+          distributeWinningsToVoters(market, consensus, correct_voter_winnings);
+          distributeReputation(market, consensus, rep_redistribute);
+          //close market
+          market.is_open = false;
+          }
     }
 
     function distributeWinningsToReporters(ArticleMarket storage _market, uint8 _consensus, uint256 _reporterWinnings) private {
@@ -214,9 +230,40 @@ contract FakeNewsMarket {
         }
     }
 
-    //TODO: distribute reputation points
-    function distributeReputation(ArticleMarket storage _market, uint8 _consensu, uint256 _correctReporterWinnings) private {
-        
+    function removeReporter(address _reporter){
+      reportersData[_reporter].is_valid = false;
+      uint initLen = reporters.length;
+      uint idx  = 0;
+      while (idx < reporters.length){
+        if (reporters[idx] == _reporter) {
+          delete reporters[idx];
+          break;
+        }
+        idx += 1;
+      }
+      reporters[idx] = reporters[initLen-1];
+      delete reporters[initLen-1]; //copy last element into the empty spot and delete it
+    }
+
+    function distributeReputation(ArticleMarket storage _market, uint8 _consensus, uint256 _correctReporterWinnings) private {
+      uint256 num_reporters = _market.reporters.length;
+      for(uint i; i<num_reporters; i++) {
+          address reporter = _market.reporters[i];
+          Report storage inReport = _market.reports[reporter];
+          if (inReport.is_valid) {
+            if (inReport.vote == _consensus) {
+              uint256 rep_winnings = _correctReporterWinnings * inReport.reputation / _market.sum_rep[_consensus];
+              reportersData[reporter].reputation += rep_winnings;
+            }
+            else {
+              reportersData[reporter].reputation -= inReport.reputation;
+              if (reportersData[reporter].reputation < minRep){
+                removeReporter(reporter);
+              }
+            }
+          }
+          i++;
+      }
     }
 
     function articleExists(string _article) public view returns (bool exists) {
@@ -240,5 +287,24 @@ contract FakeNewsMarket {
         }
     }
 
+    function getReports(string _article) public view returns (uint[3] sum_reports) {
+        bytes32 hash = keccak256(abi.encodePacked(_article));
+        if (markets[hash].creator > 0) {
+            return markets[hash].sum_reports;
+        }
+    }
+
+    function getReporterRep(address _reporter) public view returns (uint rep){
+      if (reportersData[_reporter].is_valid) {
+            return reportersData[_reporter].reputation;
+      }
+    }
+
+    function getRep(string _article) public view returns (uint[3] sum_rep) {
+        bytes32 hash = keccak256(abi.encodePacked(_article));
+        if (markets[hash].creator > 0) {
+            return markets[hash].sum_rep;
+        }
+    }
 
   }

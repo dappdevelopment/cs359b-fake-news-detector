@@ -85,34 +85,53 @@ function app() {
       });
     }
 
-    function reportArticle(article, report) {
-     contract.methods.report(article.valueOf(), report, 0).send({from:userAccount})
+    function reportArticle(article, report, rep) {
+     contract.methods.report(article.valueOf(), report, rep).send({from:userAccount})
       .then(function(result) {
         alert("Successfully Reported!");
       }).catch(function(e) {
-          alert(e);// There was an error! Handle it.
+        alert(e);// There was an error! Handle it.
+      });
+    }
+
+    function signUpReporter(email) {
+      console.log(email.valueOf());
+      contract.methods.addReporter(userAccount, email.valueOf()).send({from:userAccount})
+      .then(function(result) {
+          alert("Successfully Signed up!");
+      }).catch(function(e) {
+          alert(e);
       });
     }
 
     $("#report_button").click(function(){
       var article = $("#url").val();
-      var report;
+      var amount = $("#amount").val();
+      if (amount <= 0) {
+        alert("You must bet reputation greater than 0.");
+      }
+      var reportId;
       if (document.getElementById('report0').checked) {
-        voteId = 0;
+        reportId = 0;
       }
       if (document.getElementById('report1').checked) {
-        voteId = 1;
+        reportId = 1;
       }
       if (document.getElementById('report2').checked) {
-        voteId = 2;
+        reportId = 2;
       }
-
-      if (article != '' && (report == 0 || report == 1 || report == 2)) {
-        reportArticle(article, report);
+      if (article != '' && (reportId == 0 || reportId == 1 || reportId == 2)) {
+        reportArticle(article, reportId, amount);
       }
       else {
         alert("Invalid input!")
       }
+    });
+
+    $("#signup_button").click(function() {
+      var email=$("#email").val();
+      console.log(userAccount);
+      signUpReporter(email);
     });
 
     $("#post_button").click(function(){
@@ -128,36 +147,7 @@ function app() {
       }
     });
 
-    // function vote(article, voteId){
-    //   console.log("got to here in vote");
-    //   console.log(voteId);
-    // }
 
-<<<<<<< HEAD
-=======
-    $("#vote_button").click(function() {
-      var article = $('#url').val();
-      console.log(article);
-      var voteId;
-      if (document.getElementById('vote0').checked) {
-        voteId = 0;
-      }
-      if (document.getElementById('vote1').checked) {
-        voteId = 1;
-      }
-      if (document.getElementById('vote2').checked) {
-        voteId = 2;
-      }
-      if (article == '') {
-	       alert("Please copy and paste in the article url.");
-      } else
-      {
-        voteArticle(article, voteId);
-	      alert("Thanks for voting!");
-      }
-    });
-
->>>>>>> ca653141d8a8d53701c067a2f19ce830e0503600
 function transfer(to, amount) {
   console.log(to, amount)
   if (!to || !amount) return console.log("Fill in both fields");
