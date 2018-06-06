@@ -41,7 +41,7 @@ function app() {
           // <ul class=\"actions\"> \-->\
           <a href=\"vote.html?url="+value.url+"\"class=\"button\">Vote</a>\
           <a href=\"outcome.html?url="+value.url+"\"class=\"button\">View Outcome</a>\
-          </article>"
+          </article><br>"
           inHTML += article;
         });
         console.log(inHTML);
@@ -192,21 +192,33 @@ function app() {
     var url = $("#url").val();
     console.log("closing market");
     if (url != '') {
-      contract.methods.close_market(url).send({from:userAccount})
+      contract.methods.closeMarket(url).send({from:userAccount})
       .then(function(result) {
-        console.log(result);
-        var inHTML = "Vote deadline has not passed yet.";
-        var outcome = "No errors!";
-        if (result < 256) {
-          if (result == 1) {
-            outcome = "Some errors.";
+        contract.methods.getReports(url).call({from:userAccount})
+        .then(function(outcome) {
+        console.log(outcome);
+        var inHTML = "<h1>";
+        var output = "";
+        if (outcome < "256") {
+          if (outcome == "1") {
+            output += "Some errors.";
+          } else if (outcome == "2") {
+            output += "Fake news!!";
+          } else if (outcome == "0"){
+            output += "No errors!";
           } else {
-            outcome = "Fake news!!";
+            output += "Vote deadline has not passed yet.";
           }
-          inHTML = "Consensus is: " + outcome;
+          inHTML += "Consensus is: " + output;
         }
-        $('#closed_article_feed').html(inHTML);
+        inHTML += "</h1>";
+        console.log(inHTML);
+        $('#close_market_outcome').html(inHTML);
       }).catch(function(e) {
+        alert(e);
+      });
+      }).catch(function(e) {
+
         alert(e);
       });
     } else {
