@@ -48,7 +48,6 @@ function app() {
 
   Promise.all([contractDataPromise, networkIdPromise, accountsPromise])
     .then(function initApp(results) {
-      console.log("starting init app");
       var contractData = results[0];
       var networkId = results[1];
       var accounts = results[2];
@@ -59,27 +58,95 @@ function app() {
          throw new Error("Contract not found in selected Ethereum network on MetaMask.");
       }
 
-      var contractAddress = "0x9fb697e303caceae55eaeb3d6370711061d79c89";
+      var contractAddress = "0xA7E32C4C51Bfd7fd35f5cDa1ebEc67C9c271b35D";
       contract = new web3.eth.Contract(contractData.abi, contractAddress);
       console.log("Contract Address:", contract);
       console.log("got to end of first then")
       $("#loader").hide();
-
+      console.log(userAccount);
+      contract.methods.reporterExists(userAccount).call()
+        .then(function(result) {
+          if(result == true) {
+            $("#signup_link").hide();
+          }
+          else {
+            $("#info_link").hide();
+          }
+        }).catch(function(e) {
+          alert(e);
+        });
+      showReporterArticles();
+      refreshReputation()
     })
     .catch(console.error);
+
+    function showReporterArticles() {
+      $.get(
+        path + "reporters",
+            // {paramOne : 1, paramX : 'abc'},
+            function(data) {
+              //$('#feed').text(data[0].url);
+             data.forEach(function(reporterEntry) {
+               var inHTML = "";
+               $.each(data, function(index, value) {
+                 if(value.reporter == userAccount) {
+                   var article = " \
+                   <article> \
+                   <header> \
+                   <span class=\"date\">Deadline: "+value.deadline+"</span> \
+                   <h2><a href=\""+value.url+"\">"+value.title+"</a></h2>\
+                   </header>\
+                   <!-- <a href=\"#\" class=\"image fit\"><img src=\"images/pic02.jpg\" alt=\"\" /></a> -->\
+                   <input type=\"radio\" id=\"no-errors\" name=\"demo-priority\" checked>\
+                   <label for=\"no-errors\">No errors</label>\
+                   <input type=\"radio\" id=\"some-errors\" name=\"demo-priority\" checked>\
+                   <label for=\"some-errors\">Some errors</label>\
+                   <input type=\"radio\" id=\"many-errors\" name=\"demo-priority\" checked>\
+                   <label for=\"many-errors\">Many errors</label>\
+                   <ul class=\"actions\"> \
+                   <li><a href=\""+value.url+"\"class=\"button\">Report</a></li>\
+                   </ul>\
+                   </article>"
+                   inHTML += article;
+                 }
+               });
+               $('#reporter_feed').html(inHTML);
+             });
+            }
+          );
+    }
+
+    function refreshReputation() {
+      contract.methods.getReporterRep(userAccount).call().then(function (balance) {
+        $('#rep_display').text(balance + " REP");
+        $("#loader").hide();
+      });
+    }
 
     function postArticle(article, deadline) {
      console.log(path + "post_article?url="+article+"&deadline="+deadline);
      console.log(article.valueOf());
      console.log(Date.parse(deadline));
      contract.methods.createArticleMarket(article.valueOf(),Date.parse(deadline)).send({from:userAccount})
-      .then(function(result) {
-        $.get(
-          path + "post_article?url="+article+"&deadline="+deadline
-        );
-        $("#loader").hide();
+       .then(function(result) {
+         $.get(
+           path + "post_article?url="+article+"&deadline="+deadline
+         );
+         $("#loader").hide();
+         alert("Article Posted!");
+       }).catch(function(e) {
+           alert(e);// There was an error! Handle it.
+       });
 
-        alert("Article Posted!");
+    contract.methods.getAssignedReporters(article.valueOf()).call()
+      .then(function(result) {
+        console.log(result);
+        for (reporter of result) {
+          $.get(
+            path + "assign_reporter?url="+article+"&deadline="+deadline+"&address="+reporter
+          );
+        }
+        $("#loader").hide();
       }).catch(function(e) {
           alert(e);// There was an error! Handle it.
       });
@@ -155,17 +222,6 @@ function transfer(to, amount) {
   $("#loader").show();
 
   contract.methods.transfer(to, amount).send({from: userAccount})
-  .then(refreshBalance)
-  .catch(function (e) {
-    $("#loader").hide();
-  });
-}
-
-function mint(amount) {
-  $("#loader").show();
-  console.log(amount)
-  console.log(userAccount)
-  contract.methods.mint(amount).send({from: userAccount})
   .then(refreshBalance)
   .catch(function (e) {
     $("#loader").hide();
