@@ -88,6 +88,7 @@ function app() {
     function reportArticle(article, report, rep) {
      contract.methods.report(article.valueOf(), report, rep).send({from:userAccount})
       .then(function(result) {
+        $("#loader").hide();
         alert("Successfully Reported!");
       }).catch(function(e) {
         alert(e);// There was an error! Handle it.
