@@ -58,7 +58,7 @@ function app() {
          throw new Error("Contract not found in selected Ethereum network on MetaMask.");
       }
 
-      var contractAddress = "0xA7E32C4C51Bfd7fd35f5cDa1ebEc67C9c271b35D";
+      var contractAddress = "0xcfB2FFA7f2DaA0E8A50c42380a387d8aadfBbC53";
       contract = new web3.eth.Contract(contractData.abi, contractAddress);
       console.log("Contract Address:", contract);
       console.log("got to end of first then")
@@ -132,17 +132,32 @@ function app() {
          console.log(result);
           if (result == true) {
             alert("Article already exists! Cannot post.");
+            document.getElementById('url').value = '';
             $("#loader").hide();
           }
           else {
             contract.methods.createArticleMarket(article.valueOf(),Date.parse(deadline)).send({from:userAccount})
-              .then(function() {
+              .then(function(result) {
                 console.log(path + "post_article?url="+article+"&deadline="+deadline);
                 $.get(
                   path + "post_article?url="+article+"&deadline="+deadline
                 );
-                $("#loader").hide();
-                alert("Article Posted!");
+                contract.methods.getAssignedReporters(article.valueOf()).call()
+                  .then(function(result) {
+                    console.log(result);
+                    for (reporter of result) {
+                      console.log(reporter);
+                      if (reporter != 0) {
+                        $.get(
+                          path + "assign_reporter?url="+article+"&deadline="+deadline+"&address="+reporter
+                        );
+                      }
+                    }
+                    $("#loader").hide();
+                  }).catch(function(e) {
+                      alert(e);// There was an error! Handle it.
+                  });
+                  alert("Article Posted!");
               }).catch(function(e) {
                   alert(e);// There was an error! Handle it.
                   $("#loader").hide();
@@ -152,19 +167,6 @@ function app() {
           alert(e);// There was an error! Handle it.
           $("#loader").hide();
        });
-
-      // contract.methods.getAssignedReporters(article.valueOf()).call()
-      //   .then(function(result) {
-      //     console.log(result);
-      //     for (reporter of result) {
-      //       $.get(
-      //         path + "assign_reporter?url="+article+"&deadline="+deadline+"&address="+reporter
-      //       );
-      //     }
-      //     $("#loader").hide();
-      //   }).catch(function(e) {
-      //       alert(e);// There was an error! Handle it.
-      //   });
     }
 
     function reportArticle(article, report, rep) {
@@ -264,17 +266,6 @@ $("#vote_button").click(function() {
    });
  }
 });
-
-// $("#signup_button").click(function() {
-//   var email = $("#email").val();
-//   console.log(email);
-//   contract.methods.addReporter(userAccount, email.valueOf()).send({from:userAccount})
-//    .then(function(result) {
-//      alert("Signed up as a reporter!");
-//    }).catch(function(e) {
-//        alert(e);// There was an error! Handle it.
-//    });
-//  });
 
 
 
