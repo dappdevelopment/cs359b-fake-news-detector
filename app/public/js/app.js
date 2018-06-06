@@ -193,16 +193,16 @@ $("#vote_button").click(function() {
  }
 });
 
-$("#signup_button").click(function() {
-  var email = $("#email").val();
-  console.log(email);
-  contract.methods.addReporter(userAccount, email.valueOf()).send({from:userAccount})
-   .then(function(result) {
-     alert("Signed up as a reporter!");
-   }).catch(function(e) {
-       alert(e);// There was an error! Handle it.
-   });
- });
+// $("#signup_button").click(function() {
+//   var email = $("#email").val();
+//   console.log(email);
+//   contract.methods.addReporter(userAccount, email.valueOf()).send({from:userAccount})
+//    .then(function(result) {
+//      alert("Signed up as a reporter!");
+//    }).catch(function(e) {
+//        alert(e);// There was an error! Handle it.
+//    });
+//  });
 
 
 
