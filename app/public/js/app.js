@@ -72,6 +72,7 @@ function app() {
      console.log(path + "post_article?url="+article+"&deadline="+deadline);
      console.log(article.valueOf());
      console.log(Date.parse(deadline));
+     $("#loader").show();
      contract.methods.createArticleMarket(article.valueOf(),Date.parse(deadline)).send({from:userAccount})
       .then(function(result) {
         $.get(
@@ -135,7 +136,6 @@ function app() {
     });
 
     $("#post_button").click(function(){
-      $("#loader").show();
       console.log("hit post button");
       var article = $("#url").val();
       var deadline = $("#deadline").val();
