@@ -14,8 +14,11 @@ function app() {
   if (isLocal) {
     path = "http://localhost:3000/fakenewsdetector/"
   }
+
+  $('#url').val(window.location.search.split('=')[1]);
+
    $.get(
-     path + "articles",
+     path + "articles_open",
          // {paramOne : 1, paramX : 'abc'},
          function(data) {
            //$('#feed').text(data[0].url);
@@ -29,22 +32,44 @@ function app() {
               <h2><a href=\""+value.url+"\">"+value.title+"</a></h2>\
               </header>\
               <!-- <a href=\"#\" class=\"image fit\"><img src=\"images/pic02.jpg\" alt=\"\" /></a> -->\
-              <input type=\"radio\" id=\"no-errors\" name=\"demo-priority\" checked>\
-              <label for=\"no-errors\">No errors</label>\
-              <input type=\"radio\" id=\"some-errors\" name=\"demo-priority\" checked>\
-              <label for=\"some-errors\">Some errors</label>\
-              <input type=\"radio\" id=\"many-errors\" name=\"demo-priority\" checked>\
-              <label for=\"many-errors\">Many errors</label>\
-              <ul class=\"actions\"> \
-              <li><a href=\""+value.url+"\"class=\"button\">Vote</a></li>\
-              </ul>\
+            <!--  <input type=\"radio\" id=\"no-errors\" name=\"demo-priority\" checked>\
+              // <label for=\"no-errors\">No errors</label>\
+              // <input type=\"radio\" id=\"some-errors\" name=\"demo-priority\" checked>\
+              // <label for=\"some-errors\">Some errors</label>\
+              // <input type=\"radio\" id=\"many-errors\" name=\"demo-priority\" checked>\
+              // <label for=\"many-errors\">Many errors</label>\
+              // <ul class=\"actions\"> \-->\
+              <a href=\"vote.html?url="+value.url+"\"class=\"button\">Vote</a>\
+              <a href=\"outcome.html?url="+value.url+"\"class=\"button\">View Outcome</a>\
               </article>"
               inHTML += article;
             });
+            console.log(inHTML);
             $('#article_feed').html(inHTML);
           });
          }
        );
+       $.get(
+         path + "articles_closed",
+             // {paramOne : 1, paramX : 'abc'},
+             function(data) {
+               //$('#feed').text(data[0].url);
+              data.forEach(function(article) {
+                var inHTML = "";
+                $.each(data, function(index, value) {
+                  var article = " \
+                  <article> \
+                  <header> \
+                  <h2><a href=\""+value.url+"\">"+value.title+"</a></h2>\
+                  <h3>Outcome: FAKE NEWS"+value.deadline+"</h3> \
+                  </header>\
+                  </article>"
+                  inHTML += article;
+                });
+                $('#closed_article_feed').html(inHTML);
+              });
+             }
+           );
 
   Promise.all([contractDataPromise, networkIdPromise, accountsPromise])
     .then(function initApp(results) {
@@ -147,10 +172,10 @@ function app() {
       }
     });
 
-function transfer(to, amount) {
-  console.log(to, amount)
-  if (!to || !amount) return console.log("Fill in both fields");
-  $("#loader").show();
+  function closeMarket() {
+      console.log("closing market for");
+      // console.log(url);
+  }
 
   contract.methods.transfer(to, amount).send({from: userAccount})
   .then(refreshBalance)
@@ -191,18 +216,6 @@ $("#vote_button").click(function() {
    });
  }
 });
-
-// $("#signup_button").click(function() {
-//   var email = $("#email").val();
-//   console.log(email);
-//   contract.methods.addReporter(userAccount, email.valueOf()).send({from:userAccount})
-//    .then(function(result) {
-//      alert("Signed up as a reporter!");
-//    }).catch(function(e) {
-//        alert(e);// There was an error! Handle it.
-//    });
-//  });
-
 
 
 }

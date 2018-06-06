@@ -307,4 +307,11 @@ contract FakeNewsMarket {
         }
     }
 
+    function getConsensus(string _article) public view returns (uint consensus) {
+      bytes32 hash = keccak256(abi.encodePacked(_article));
+      if (markets[hash].creator > 0) {
+          return markets[hash].consensus;
+      }
+    }
+
   }
