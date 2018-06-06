@@ -84,60 +84,71 @@ function app() {
       throw new Error("Contract not found in selected Ethereum network on MetaMask.");
     }
 
-    var contractAddress = "0x9fb697e303caceae55eaeb3d6370711061d79c89";
-    contract = new web3.eth.Contract(contractData.abi, contractAddress);
-    console.log("Contract Address:", contract);
-    console.log("got to end of first then")
-    $("#loader").hide();
 
-  })
-  .catch(console.error);
+      var contractAddress = "0xcfB2FFA7f2DaA0E8A50c42380a387d8aadfBbC53";
+      contract = new web3.eth.Contract(contractData.abi, contractAddress);
+      console.log("Contract Address:", contract);
+      console.log("got to end of first then")
+      $("#loader").hide();
+      console.log(userAccount);
+      contract.methods.reporterExists(userAccount).call()
+        .then(function(result) {
+          if(result == true) {
+            $("#signup_link").hide();
+          }
+          else {
+            $("#info_link").hide();
+          }
+        }).catch(function(e) {
+          alert(e);
+        });
+      showReporterArticles();
+      refreshReputation()
+    })
+    .catch(console.error);
 
+    function showReporterArticles() {
+          $.get(
+            path + "reporters",
+                // {paramOne : 1, paramX : 'abc'},
+                function(data) {
+                  //$('#feed').text(data[0].url);
+                 data.forEach(function(reporterEntry) {
+                   var inHTML = "";
+                   $.each(data, function(index, value) {
+                     if(value.reporter == userAccount) {
+                       var article = " \
+                       <article> \
+                       <header> \
+                       <span class=\"date\">Deadline: "+value.deadline+"</span> \
+                       <h2><a href=\""+value.url+"\">"+value.title+"</a></h2>\
+                       </header>\
+                       <!-- <a href=\"#\" class=\"image fit\"><img src=\"images/pic02.jpg\" alt=\"\" /></a> -->\
+                       <input type=\"radio\" id=\"no-errors\" name=\"demo-priority\" checked>\
+                       <label for=\"no-errors\">No errors</label>\
+                       <input type=\"radio\" id=\"some-errors\" name=\"demo-priority\" checked>\
+                       <label for=\"some-errors\">Some errors</label>\
+                       <input type=\"radio\" id=\"many-errors\" name=\"demo-priority\" checked>\
+                       <label for=\"many-errors\">Many errors</label>\
+                       <ul class=\"actions\"> \
+                       <li><a href=\""+value.url+"\"class=\"button\">Report</a></li>\
+                       </ul>\
+                       </article>"
+                       inHTML += article;
+                     }
+                   });
+                   $('#reporter_feed').html(inHTML);
+                 });
+                }
+              );
+        }
 
-      function postArticle(article, deadline) {
-         console.log(path + "post_article?url="+article+"&deadline="+deadline);
-         console.log(article.valueOf());
-         console.log(Date.parse(deadline));
-         contract.methods.articleExists(article.valueOf()).call()
-         .then(function(result) {
-           console.log(result);
-            if (result == true) {
-              alert("Article already exists! Cannot post.");
+        function refreshReputation() {
+            contract.methods.getReporterRep(userAccount).call().then(function (balance) {
+              $('#rep_display').text(balance + " REP");
               $("#loader").hide();
-            }
-            else {
-              contract.methods.createArticleMarket(article.valueOf(),Date.parse(deadline)).send({from:userAccount})
-                .then(function() {
-                  console.log(path + "post_article?url="+article+"&deadline="+deadline);
-                  $.get(
-                    path + "post_article?url="+article+"&deadline="+deadline
-                  );
-                  $("#loader").hide();
-                  alert("Article Posted!");
-                }).catch(function(e) {
-                    alert(e);// There was an error! Handle it.
-                    $("#loader").hide();
-                });
-            }
-         }).catch(function(e) {
-            alert(e);// There was an error! Handle it.
-            $("#loader").hide();
-         });
-
-        // contract.methods.getAssignedReporters(article.valueOf()).call()
-        //   .then(function(result) {
-        //     console.log(result);
-        //     for (reporter of result) {
-        //       $.get(
-        //         path + "assign_reporter?url="+article+"&deadline="+deadline+"&address="+reporter
-        //       );
-        //     }
-        //     $("#loader").hide();
-        //   }).catch(function(e) {
-        //       alert(e);// There was an error! Handle it.
-        //   });
-      }
-
+            });
+          }
 
   function reportArticle(article, report, rep) {
     contract.methods.report(article.valueOf(), report, rep).send({from:userAccount})
@@ -182,16 +193,14 @@ function app() {
     }
   });
 
-
   $("#post_button").click(function(){
     console.log("hit post button");
     var article = $("#url").val();
     var deadline = $("#deadline").val();
     if (article != '' && deadline != '') {
       postArticle(article, deadline);
-    else {
-      alert("Please fill in both fields");
-    }
+    } else {
+      alert("Please fill in both fields");}
   });
 
   $("#vote_button").click(function() {
@@ -249,4 +258,68 @@ function app() {
   });
 }
 
-  $(document).ready(app);
+function postArticle(article, deadline) {
+   console.log(path + "post_article?url="+article+"&deadline="+deadline);
+   console.log(article.valueOf());
+   console.log(Date.parse(deadline));
+   contract.methods.articleExists(article.valueOf()).call()
+   .then(function(result) {
+     console.log(result);
+      if (result == true) {
+        alert("Article already exists! Cannot post.");
+        document.getElementById('url').value = '';
+        $("#loader").hide();
+      }
+      else {
+        contract.methods.createArticleMarket(article.valueOf(),Date.parse(deadline)).send({from:userAccount})
+          .then(function(result) {
+            console.log(path + "post_article?url="+article+"&deadline="+deadline);
+            $.get(
+              path + "post_article?url="+article+"&deadline="+deadline
+            );
+            contract.methods.getAssignedReporters(article.valueOf()).call()
+              .then(function(result) {
+                console.log(result);
+                for (reporter of result) {
+                  console.log(reporter);
+                  if (reporter != 0) {
+                    $.get(
+                      path + "assign_reporter?url="+article+"&deadline="+deadline+"&address="+reporter
+                    );
+                  }
+                }
+                $("#loader").hide();
+              }).catch(function(e) {
+                  alert(e);// There was an error! Handle it.
+              });
+              alert("Article Posted!");
+          }).catch(function(e) {
+              alert(e);// There was an error! Handle it.
+              $("#loader").hide();
+          });
+      }
+   }).catch(function(e) {
+      alert(e);// There was an error! Handle it.
+      $("#loader").hide();
+   });
+
+$("#vote_button").click(function() {
+  var url = $("#url").val();
+  var vote = $('input[name=vote]:checked').val();
+  var amount = $("#amount").val();
+  if (amount <= 0) {
+    alert("You must bet a sum greater than 0.");// There was an error! Handle it.
+  } else {
+  contract.methods.vote(url.valueOf(), vote).send({from:userAccount, value: web3.utils.toWei(amount, "ether")})
+   .then(function(result) {
+     alert("Voted !");
+   }).catch(function(e) {
+       alert(e);// There was an error! Handle it.
+   });
+ }
+});
+
+
+
+}
+$(document).ready(app);
