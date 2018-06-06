@@ -133,31 +133,6 @@ function app() {
     //   console.log(voteId);
     // }
 
-<<<<<<< HEAD
-=======
-    $("#vote_button").click(function() {
-      var article = $('#url').val();
-      console.log(article);
-      var voteId;
-      if (document.getElementById('vote0').checked) {
-        voteId = 0;
-      }
-      if (document.getElementById('vote1').checked) {
-        voteId = 1;
-      }
-      if (document.getElementById('vote2').checked) {
-        voteId = 2;
-      }
-      if (article == '') {
-	       alert("Please copy and paste in the article url.");
-      } else
-      {
-        voteArticle(article, voteId);
-	      alert("Thanks for voting!");
-      }
-    });
-
->>>>>>> ca653141d8a8d53701c067a2f19ce830e0503600
 function transfer(to, amount) {
   console.log(to, amount)
   if (!to || !amount) return console.log("Fill in both fields");
