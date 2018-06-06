@@ -30,7 +30,7 @@ contract FakeNewsMarket {
         mapping(address => Bet) votes;
         mapping(address => Report) reports;
         address[] voters;
-        address[] reporters;
+        address[10] reporters;
         uint[3] sum_votes;
         uint[3] sum_reports;
         uint[3] sum_bets;
@@ -43,8 +43,9 @@ contract FakeNewsMarket {
     mapping(bytes32 => ArticleMarket) public markets;
     uint public numArticles = 0;
 
-    function createArticleMarket(string _article, uint256 _deadline) public returns (uint256){
+    function createArticleMarket(string _article, uint256 _deadline) public returns (uint added){
       bytes32 article_hash = keccak256(abi.encodePacked(_article));
+      address[10] memory reporterAddresses = assignReporters();
       ArticleMarket memory new_market = ArticleMarket({
           creator: msg.sender,
           deadline: _deadline,
@@ -54,24 +55,27 @@ contract FakeNewsMarket {
           sum_bets: [uint(0),uint(0),uint(0)],
           sum_rep: [uint(0), uint(0), uint(0)],
           voters: new address[](0),
-          reporters: new address[](0),
+          reporters: reporterAddresses,
           consensus: 256
       });
       markets[article_hash] = new_market;
-      address[10] memory reporterAddresses = assignReporters();
       Report memory report = Report({
          is_valid: true,
          vote: 0,
          reputation: 0
       });
       for (uint i = 0; i < 10; i++){
-        markets[article_hash].reporters.push(reporterAddresses[i]);
         markets[article_hash].reports[reporterAddresses[i]]= report; //initialize reports
       }
-
       emit ArticleCreated(msg.sender, numArticles, article_hash);
       numArticles += 1;
       return 1;
+    }
+
+
+    function getAssignedReporters(string _article) public view returns (address[10] assigned){
+      bytes32 article_hash = keccak256(abi.encodePacked(_article));
+      return markets[article_hash].reporters;
     }
 
     function vote(string _article, uint _vote) public payable returns (bool success) {
@@ -148,7 +152,7 @@ contract FakeNewsMarket {
       });
     }
 
-    function assignReporters() private returns (address[10] assigned){
+    function assignReporters() private view returns (address[10] assigned){
         uint[10] memory indices;
         if (reporters.length < 10) {
             for (uint r = 0; r < reporters.length; r++){
@@ -208,6 +212,7 @@ contract FakeNewsMarket {
           distributeReputation(market, consensus, rep_redistribute);
           //close market
           market.is_open = false;
+          market.consensus = consensus;
           }
     }
 
@@ -276,6 +281,13 @@ contract FakeNewsMarket {
     if (markets[hash].creator > 0) {
         return true;
     }
+    }
+
+    function reporterExists(address _reporter) public view returns (bool exists) {
+      if (reportersData[_reporter].is_valid == true) {
+        return true;
+      }
+      return false;
     }
 
     function getVotes(string _article) public view returns (uint[3] sum_votes) {
