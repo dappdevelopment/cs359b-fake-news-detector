@@ -124,32 +124,47 @@ function app() {
     }
 
     function postArticle(article, deadline) {
-     console.log(path + "post_article?url="+article+"&deadline="+deadline);
-     console.log(article.valueOf());
-     console.log(Date.parse(deadline));
-     contract.methods.createArticleMarket(article.valueOf(),Date.parse(deadline)).send({from:userAccount})
+       console.log(path + "post_article?url="+article+"&deadline="+deadline);
+       console.log(article.valueOf());
+       console.log(Date.parse(deadline));
+       contract.methods.articleExists(article.valueOf()).call()
        .then(function(result) {
-         $.get(
-           path + "post_article?url="+article+"&deadline="+deadline
-         );
-         $("#loader").hide();
-         alert("Article Posted!");
+         console.log(result);
+          if (result == true) {
+            alert("Article already exists! Cannot post.");
+            $("#loader").hide();
+          }
+          else {
+            contract.methods.createArticleMarket(article.valueOf(),Date.parse(deadline)).send({from:userAccount})
+              .then(function() {
+                console.log(path + "post_article?url="+article+"&deadline="+deadline);
+                $.get(
+                  path + "post_article?url="+article+"&deadline="+deadline
+                );
+                $("#loader").hide();
+                alert("Article Posted!");
+              }).catch(function(e) {
+                  alert(e);// There was an error! Handle it.
+                  $("#loader").hide();
+              });
+          }
        }).catch(function(e) {
-           alert(e);// There was an error! Handle it.
+          alert(e);// There was an error! Handle it.
+          $("#loader").hide();
        });
 
-    contract.methods.getAssignedReporters(article.valueOf()).call()
-      .then(function(result) {
-        console.log(result);
-        for (reporter of result) {
-          $.get(
-            path + "assign_reporter?url="+article+"&deadline="+deadline+"&address="+reporter
-          );
-        }
-        $("#loader").hide();
-      }).catch(function(e) {
-          alert(e);// There was an error! Handle it.
-      });
+      // contract.methods.getAssignedReporters(article.valueOf()).call()
+      //   .then(function(result) {
+      //     console.log(result);
+      //     for (reporter of result) {
+      //       $.get(
+      //         path + "assign_reporter?url="+article+"&deadline="+deadline+"&address="+reporter
+      //       );
+      //     }
+      //     $("#loader").hide();
+      //   }).catch(function(e) {
+      //       alert(e);// There was an error! Handle it.
+      //   });
     }
 
     function reportArticle(article, report, rep) {
