@@ -5,10 +5,10 @@ var getTitleAtURL = require('get-title-at-url');
 
 const con = mysql.createConnection({
   /* For server */
-   // host: "localhost",
-   // user: "fakenewsdetector",
-   // password: "KaO62ww0kuom0",
-   // database: "fakenewsdetector"
+    // host: "localhost",
+    // user: "fakenewsdetector",
+    // password: "KaO62ww0kuom0",
+    // database: "fakenewsdetector"
 
   /* For local */
   host: "localhost",
@@ -55,6 +55,43 @@ app.get('/fakenewsdetector/articles_closed', function(req,res) {
       articles.push(article);
     });
     res.json(articles);
+  });
+});
+
+app.get('/fakenewsdetector/reporters', function(req,res) {
+ res.setHeader('Access-Control-Allow-Origin', '*');
+ res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+ res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+ res.setHeader('Access-Control-Allow-Credentials', true);
+  var sql = 'SELECT * FROM reporters ORDER BY deadline';
+  con.query(sql, function (err, results) {
+    if (err) throw err;
+    var articles = [];
+    results.forEach((row) => {
+      var article = {};
+      article.reporter = row.address;
+      article.url = row.url;
+      article.deadline = row.deadline;
+      article.title = row.title;
+      articles.push(article);
+    });
+    res.json(articles);
+  });
+});
+
+app.get('/fakenewsdetector/assign_reporter', function(req,res) {
+  var address = req.param('address');
+  var deadline = req.param('deadline');
+  var url = req.param('url');
+  var message = {};
+  var title = getTitleAtURL(url, function(title) {
+    if (title == '') title = url;
+    var sql = 'INSERT INTO reporters(address, url, title, deadline) VALUES("'+address+'","'+url+'","'+title+'","'+deadline+'")';
+    con.query(sql, function (err, results) {
+      if (err) throw err;
+    });
+    message.message = "inserted";
+    res.json(message);
   });
 });
 

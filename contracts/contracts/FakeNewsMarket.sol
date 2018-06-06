@@ -35,6 +35,7 @@ contract FakeNewsMarket {
         uint[3] sum_reports;
         uint[3] sum_bets;
         uint[3] sum_rep; //sum of reputation
+        uint consensus;
     }
 
     event ArticleCreated(address indexed _creator, uint indexed _numberInArray, bytes32 indexed _articleHash);
@@ -53,7 +54,8 @@ contract FakeNewsMarket {
           sum_bets: [uint(0),uint(0),uint(0)],
           sum_rep: [uint(0), uint(0), uint(0)],
           voters: new address[](0),
-          reporters: new address[](0)
+          reporters: new address[](0),
+          consensus: 256
       });
       markets[article_hash] = new_market;
       address[10] memory reporterAddresses = assignReporters();
@@ -124,11 +126,15 @@ contract FakeNewsMarket {
     function report(string _article, uint _vote, uint _rep) {
       bytes32 hash = keccak256(abi.encodePacked(_article));
       require(markets[hash].reports[msg.sender].is_valid == true);
+      require(markets[hash].reports[msg.sender].reputation == 0); //not reported yet
+      require(reportersData[msg.sender].reputation >= _rep);
+      reportersData[msg.sender].reputation -= _rep;
       markets[hash].reports[msg.sender] = Report({
         vote : _vote,
         reputation : _rep,
         is_valid: true
       });
+      markets[hash].sum_reports[_vote] += 1;
       markets[hash].sum_rep[_vote] += _rep;
     }
 
@@ -252,11 +258,10 @@ contract FakeNewsMarket {
           Report storage inReport = _market.reports[reporter];
           if (inReport.is_valid) {
             if (inReport.vote == _consensus) {
-              uint256 rep_winnings = _correctReporterWinnings * inReport.reputation / _market.sum_rep[_consensus];
+              uint256 rep_winnings = inReport.reputation + _correctReporterWinnings*inReport.reputation/_market.sum_rep[_consensus];
               reportersData[reporter].reputation += rep_winnings;
             }
             else {
-              reportersData[reporter].reputation -= inReport.reputation;
               if (reportersData[reporter].reputation < minRep){
                 removeReporter(reporter);
               }
