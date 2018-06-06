@@ -85,70 +85,62 @@ function app() {
     }
 
 
-      var contractAddress = "0xcfB2FFA7f2DaA0E8A50c42380a387d8aadfBbC53";
-      contract = new web3.eth.Contract(contractData.abi, contractAddress);
-      console.log("Contract Address:", contract);
-      console.log("got to end of first then")
-      $("#loader").hide();
-      console.log(userAccount);
-      contract.methods.reporterExists(userAccount).call()
-        .then(function(result) {
-          if(result == true) {
-            $("#signup_link").hide();
-          }
-          else {
-            $("#info_link").hide();
-          }
-        }).catch(function(e) {
-          alert(e);
+    var contractAddress = "0xcfB2FFA7f2DaA0E8A50c42380a387d8aadfBbC53";
+    contract = new web3.eth.Contract(contractData.abi, contractAddress);
+    console.log("Contract Address:", contract);
+    console.log("got to end of first then")
+    $("#loader").hide();
+    console.log(userAccount);
+    contract.methods.reporterExists(userAccount).call()
+    .then(function(result) {
+      if(result == true) {
+        $("#signup_link").hide();
+      }
+      else {
+        $("#info_link").hide();
+      }
+    }).catch(function(e) {
+      alert(e);
+    });
+    showReporterArticles();
+    refreshReputation()
+  })
+  .catch(console.error);
+
+  function showReporterArticles() {
+    $.get(
+      path + "reporters",
+      // {paramOne : 1, paramX : 'abc'},
+      function(data) {
+        //$('#feed').text(data[0].url);
+        data.forEach(function(reporterEntry) {
+          var inHTML = "";
+          $.each(data, function(index, value) {
+            if(value.reporter == userAccount) {
+              var article = " \
+              <article> \
+              <header> \
+              <span class=\"date\">Deadline: "+value.deadline+"</span> \
+              <h2><a href=\""+value.url+"\">"+value.title+"</a></h2>\
+              </header>\
+              <!-- <a href=\"#\" class=\"image fit\"><img src=\"images/pic02.jpg\" alt=\"\" /></a> -->\
+              <a href=\"report.html?url="+value.url+"\"class=\"button\">Report</a>\
+              </article>"
+              inHTML += article;
+            }
+          });
+          $('#reporter_feed').html(inHTML);
         });
-      showReporterArticles();
-      refreshReputation()
-    })
-    .catch(console.error);
+      }
+    );
+  }
 
-    function showReporterArticles() {
-          $.get(
-            path + "reporters",
-                // {paramOne : 1, paramX : 'abc'},
-                function(data) {
-                  //$('#feed').text(data[0].url);
-                 data.forEach(function(reporterEntry) {
-                   var inHTML = "";
-                   $.each(data, function(index, value) {
-                     if(value.reporter == userAccount) {
-                       var article = " \
-                       <article> \
-                       <header> \
-                       <span class=\"date\">Deadline: "+value.deadline+"</span> \
-                       <h2><a href=\""+value.url+"\">"+value.title+"</a></h2>\
-                       </header>\
-                       <!-- <a href=\"#\" class=\"image fit\"><img src=\"images/pic02.jpg\" alt=\"\" /></a> -->\
-                       <input type=\"radio\" id=\"no-errors\" name=\"demo-priority\" checked>\
-                       <label for=\"no-errors\">No errors</label>\
-                       <input type=\"radio\" id=\"some-errors\" name=\"demo-priority\" checked>\
-                       <label for=\"some-errors\">Some errors</label>\
-                       <input type=\"radio\" id=\"many-errors\" name=\"demo-priority\" checked>\
-                       <label for=\"many-errors\">Many errors</label>\
-                       <ul class=\"actions\"> \
-                       <li><a href=\""+value.url+"\"class=\"button\">Report</a></li>\
-                       </ul>\
-                       </article>"
-                       inHTML += article;
-                     }
-                   });
-                   $('#reporter_feed').html(inHTML);
-                 });
-                }
-              );
-        }
-
-        function refreshReputation() {
-            contract.methods.getReporterRep(userAccount).call().then(function (balance) {
-              $('#rep_display').text(balance + " REP");
-              $("#loader").hide();
-            });
-          }
+  function refreshReputation() {
+    contract.methods.getReporterRep(userAccount).call().then(function (balance) {
+      $('#rep_display').text(balance + " REP");
+      $("#loader").hide();
+    });
+  }
 
   function reportArticle(article, report, rep) {
     contract.methods.report(article.valueOf(), report, rep).send({from:userAccount})
@@ -193,6 +185,13 @@ function app() {
     }
   });
 
+  $("#signup_button").click(function() {
+    var email=$("#email").val();
+    console.log(userAccount);
+    signUpReporter(email);
+  });
+
+
   $("#post_button").click(function(){
     console.log("hit post button");
     var article = $("#url").val();
@@ -201,125 +200,109 @@ function app() {
       postArticle(article, deadline);
     } else {
       alert("Please fill in both fields");}
-  });
+    });
 
-  $("#vote_button").click(function() {
-    var url = $("#url").val();
-    var vote = $('input[name=vote]:checked').val();
-    var amount = $("#amount").val();
-    if (amount <= 0) {
-      alert("You must bet a sum greater than 0.");// There was an error! Handle it.
-    } else {
-      contract.methods.vote(url.valueOf(), vote).send({from:userAccount, value: web3.utils.toWei(amount, "ether")})
-      .then(function(result) {
-        alert("Voted !");
-      }).catch(function(e) {
-        alert(e);// There was an error! Handle it.
-      });
-    }
-  });
+    $("#close_market").click(function(){
+      var url = $("#url").val();
+      console.log("closing market");
+      if (url != '') {
+        contract.methods.closeMarket(url).send({from:userAccount})
+        .then(function(result) {
+          contract.methods.getReports(url).call({from:userAccount})
+          .then(function(outcome) {
+            console.log(outcome);
+            var inHTML = "<h3>";
+            var output = "";
+            if (outcome < "256") {
+              if (outcome == "1") {
+                output += "Some errors.";
+              } else if (outcome == "2") {
+                output += "Fake news!!";
+              } else if (outcome == "0"){
+                output += "No errors!";
+              } else {
+                output += "Vote deadline has not passed yet.";
+              }
+              inHTML += "Consensus is: " + output;
+            }
+            inHTML += "</h3>";
+            console.log(inHTML);
+            $('#close_market_outcome').html(inHTML);
+          }).catch(function(e) {
+            alert(e);
+          });
+        }).catch(function(e) {
 
-  $("#close_market").click(function(){
-    var url = $("#url").val();
-    console.log("closing market");
-    if (url != '') {
-      contract.methods.closeMarket(url).send({from:userAccount})
-      .then(function(result) {
-        contract.methods.getReports(url).call({from:userAccount})
-        .then(function(outcome) {
-        console.log(outcome);
-        var inHTML = "<h1>";
-        var output = "";
-        if (outcome < "256") {
-          if (outcome == "1") {
-            output += "Some errors.";
-          } else if (outcome == "2") {
-            output += "Fake news!!";
-          } else if (outcome == "0"){
-            output += "No errors!";
-          } else {
-            output += "Vote deadline has not passed yet.";
-          }
-          inHTML += "Consensus is: " + output;
-        }
-        inHTML += "</h1>";
-        console.log(inHTML);
-        $('#close_market_outcome').html(inHTML);
-      }).catch(function(e) {
-        alert(e);
-      });
-      }).catch(function(e) {
-
-        alert(e);
-      });
-    } else {
-      alert("Please enter an article url.");
-    }
-  });
-}
-
-function postArticle(article, deadline) {
-   console.log(path + "post_article?url="+article+"&deadline="+deadline);
-   console.log(article.valueOf());
-   console.log(Date.parse(deadline));
-   contract.methods.articleExists(article.valueOf()).call()
-   .then(function(result) {
-     console.log(result);
-      if (result == true) {
-        alert("Article already exists! Cannot post.");
-        document.getElementById('url').value = '';
-        $("#loader").hide();
+          alert(e);
+        });
+      } else {
+        alert("Please enter an article url.");
       }
-      else {
-        contract.methods.createArticleMarket(article.valueOf(),Date.parse(deadline)).send({from:userAccount})
+    });
+
+    function postArticle(article, deadline) {
+      console.log(path + "post_article?url="+article+"&deadline="+deadline);
+      console.log(article.valueOf());
+      console.log(Date.parse(deadline));
+      contract.methods.articleExists(article.valueOf()).call()
+      .then(function(result) {
+        console.log(result);
+        if (result == true) {
+          alert("Article already exists! Cannot post.");
+          document.getElementById('url').value = '';
+          $("#loader").hide();
+        }
+        else {
+          contract.methods.createArticleMarket(article.valueOf(),Date.parse(deadline)).send({from:userAccount})
           .then(function(result) {
             console.log(path + "post_article?url="+article+"&deadline="+deadline);
             $.get(
               path + "post_article?url="+article+"&deadline="+deadline
             );
             contract.methods.getAssignedReporters(article.valueOf()).call()
-              .then(function(result) {
-                console.log(result);
-                for (reporter of result) {
-                  console.log(reporter);
-                  if (reporter != 0) {
-                    $.get(
-                      path + "assign_reporter?url="+article+"&deadline="+deadline+"&address="+reporter
-                    );
-                  }
+            .then(function(result) {
+              console.log(result);
+              for (reporter of result) {
+                console.log(reporter);
+                if (reporter != 0) {
+                  $.get(
+                    path + "assign_reporter?url="+article+"&deadline="+deadline+"&address="+reporter
+                  );
                 }
-                $("#loader").hide();
-              }).catch(function(e) {
-                  alert(e);// There was an error! Handle it.
-              });
-              alert("Article Posted!");
-          }).catch(function(e) {
-              alert(e);// There was an error! Handle it.
+              }
               $("#loader").hide();
+            }).catch(function(e) {
+              alert(e);// There was an error! Handle it.
+            });
+            alert("Article Posted!");
+          }).catch(function(e) {
+            alert(e);// There was an error! Handle it.
+            $("#loader").hide();
           });
-      }
-   }).catch(function(e) {
-      alert(e);// There was an error! Handle it.
-      $("#loader").hide();
-   });
+        }
+      }).catch(function(e) {
+        alert(e);// There was an error! Handle it.
+        $("#loader").hide();
+      });
+    }
 
-$("#vote_button").click(function() {
-  var url = $("#url").val();
-  var vote = $('input[name=vote]:checked').val();
-  var amount = $("#amount").val();
-  if (amount <= 0) {
-    alert("You must bet a sum greater than 0.");// There was an error! Handle it.
-  } else {
-  contract.methods.vote(url.valueOf(), vote).send({from:userAccount, value: web3.utils.toWei(amount, "ether")})
-   .then(function(result) {
-     alert("Voted !");
-   }).catch(function(e) {
-       alert(e);// There was an error! Handle it.
-   });
- }
-});
+      $("#vote_button").click(function() {
+        var url = $("#url").val();
+        var vote = $('input[name=vote]:checked').val();
+        var amount = $("#amount").val();
+        if (amount <= 0) {
+          alert("You must bet a sum greater than 0.");// There was an error! Handle it.
+        } else {
+          contract.methods.vote(url.valueOf(), vote).send({from:userAccount, value: web3.utils.toWei(amount, "ether")})
+          .then(function(result) {
+            alert("Voted !");
+          }).catch(function(e) {
+            alert(e);// There was an error! Handle it.
+          });
+        }
+      });
 
 
 
-}
-$(document).ready(app);
+    }
+    $(document).ready(app);
