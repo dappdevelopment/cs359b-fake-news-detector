@@ -5,7 +5,7 @@ contract FakeNewsMarket {
     mapping(address => Reporter) reportersData; //address to email
     address[] reporters;
     address[] blacklisted;
-    uint256 minRep = 10;
+    uint256 minRep = 15;
 
     struct Reporter {
         bytes32 email;
