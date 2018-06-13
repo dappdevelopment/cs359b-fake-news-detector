@@ -90,7 +90,7 @@ function app() {
     }
 
 
-    var contractAddress = "0xcfB2FFA7f2DaA0E8A50c42380a387d8aadfBbC53";
+    var contractAddress = "0x289c5e03081a6e8397737e8a4b183d0145882a95";
     contract = new web3.eth.Contract(contractData.abi, contractAddress);
     console.log("Contract Address:", contract);
     console.log("got to end of first then")
@@ -286,10 +286,10 @@ function app() {
               alert(e);// There was an error! Handle it.
             });
             alert("Article Posted!");
+            $("#loader").hide();
           }).catch(function(e) {
             alert(e);// There was an error! Handle it.
           });
-          $("#loader").hide();
         }
       }).catch(function(e) {
         alert(e);// There was an error! Handle it.
