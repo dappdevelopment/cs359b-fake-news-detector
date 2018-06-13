@@ -1,5 +1,8 @@
 function app() {
-  if (typeof web3 == 'undefined') throw 'No web3 detected. Is Metamask/Mist being used?!';
+  if (typeof web3 == 'undefined') {
+    alert('No web3 detected. Is Metamask/Mist being used?');
+    throw 'No web3 detected. Is Metamask/Mist being used?';
+  }
   web3 = new Web3(web3.currentProvider); // MetaMask injected Ethereum provider
   console.log("Using web3 version: " + Web3.version);
 
@@ -83,6 +86,7 @@ function app() {
     // Make sure the contract is deployed on the connected network
     if (!(networkId in contractData.networks)) {
       throw new Error("Contract not found in selected Ethereum network on MetaMask.");
+      alert("Appears you are not on Rinkeby test network. Please switch to Rinkeby.");
     }
 
 

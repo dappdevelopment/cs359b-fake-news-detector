@@ -164,16 +164,16 @@ contract FakeNewsMarket {
         }
         uint i = 0;
         while (i < 10) {
-          uint random_number = uint(blockhash(block.number-1))%reporters.length + 1;
+          uint rep_idx = uint(blockhash(block.number-1, msg.sender, now))%reporters.length + 1;
           bool exists = false;
           for (uint j = 0; j < i; j++) {
-            if(indices[j] == random_number) {
+            if(indices[j] == rep_idx) {
               exists = true;
             }
           }
           if (!exists){
-            indices[i] = random_number;
-            assigned[i] = reporters[random_number];
+            indices[i] = rep_idx;
+            assigned[i] = reporters[rep_idx];
             i += 1;
           }
         }
