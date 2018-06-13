@@ -31,7 +31,7 @@ contract FakeNewsMarket {
         mapping(address => Bet) votes;
         mapping(address => Report) reports;
         address[] voters;
-        address[10] reporters;
+        address[50] reporters;
         uint[3] sum_votes;
         uint[3] sum_reports;
         uint[3] sum_bets;
@@ -46,7 +46,7 @@ contract FakeNewsMarket {
 
     function createArticleMarket(string _article, uint256 _deadline) public returns (uint added){
       bytes32 article_hash = keccak256(abi.encodePacked(_article));
-      address[10] memory reporterAddresses = assignReporters();
+      address[50] memory reporterAddresses = assignReporters();
       ArticleMarket memory new_market = ArticleMarket({
           creator: msg.sender,
           deadline: _deadline,
@@ -65,7 +65,7 @@ contract FakeNewsMarket {
          vote: 0,
          reputation: 0
       });
-      for (uint i = 0; i < 10; i++){
+      for (uint i = 0; i < 50; i++){
         markets[article_hash].reports[reporterAddresses[i]]= report; //initialize reports
       }
       emit ArticleCreated(msg.sender, numArticles, article_hash);
@@ -74,7 +74,7 @@ contract FakeNewsMarket {
     }
 
 
-    function getAssignedReporters(string _article) public view returns (address[10] assigned){
+    function getAssignedReporters(string _article) public view returns (address[50] assigned){
       bytes32 article_hash = keccak256(abi.encodePacked(_article));
       return markets[article_hash].reporters;
     }
@@ -154,16 +154,16 @@ contract FakeNewsMarket {
       });
     }
 
-    function assignReporters() private view returns (address[10] assigned){
-        uint[10] memory indices;
-        if (reporters.length < 10) {
+    function assignReporters() private view returns (address[50] assigned){
+        uint[50] memory indices;
+        if (reporters.length < 50) {
             for (uint r = 0; r < reporters.length; r++){
               assigned[r] = reporters[r]; //copy whatever reporters exist into addresses
             }
             return assigned;
         }
         uint i = 0;
-        while (i < 10) {
+        while (i < 50) {
           uint rep_idx = uint(sha256(abi.encodePacked(blockhash(block.number-1), msg.sender, now)))%reporters.length + 1;
           bool exists = false;
           for (uint j = 0; j < i; j++) {
