@@ -164,7 +164,7 @@ contract FakeNewsMarket {
         }
         uint i = 0;
         while (i < 10) {
-          uint rep_idx = uint(blockhash(block.number-1, msg.sender, now))%reporters.length + 1;
+          uint rep_idx = uint(sha256(abi.encodePacked(blockhash(block.number-1), msg.sender, now)))%reporters.length + 1;
           bool exists = false;
           for (uint j = 0; j < i; j++) {
             if(indices[j] == rep_idx) {
