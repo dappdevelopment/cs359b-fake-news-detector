@@ -4,6 +4,7 @@ contract FakeNewsMarket {
 
     mapping(address => Reporter) reportersData; //address to email
     address[] reporters;
+    address[] blacklisted;
     uint256 minRep = 10;
 
     struct Reporter {
@@ -144,6 +145,7 @@ contract FakeNewsMarket {
 
     function addReporter(address _address, string email) {
       bytes32 hash = keccak256(abi.encodePacked(email));
+      require(reporterBlacklisted(_address) == false);
       reporters.push(_address);
       reportersData[_address] = Reporter({
         email : hash,
@@ -254,6 +256,7 @@ contract FakeNewsMarket {
       }
       reporters[idx] = reporters[initLen-1];
       delete reporters[initLen-1]; //copy last element into the empty spot and delete it
+      blacklisted.push(_reporter); //so can't sign up again :)
     }
 
     function distributeReputation(ArticleMarket storage _market, uint8 _consensus, uint256 _correctReporterWinnings) private {
@@ -286,6 +289,15 @@ contract FakeNewsMarket {
     function reporterExists(address _reporter) public view returns (bool exists) {
       if (reportersData[_reporter].is_valid == true) {
         return true;
+      }
+      return false;
+    }
+
+    function reporterBlacklisted(address _reporter) public view returns (bool exists) {
+      for (uint i = 0; i < blacklisted.length; i++){
+        if (blacklisted[i] == _reporter){
+          return true;
+        }
       }
       return false;
     }
