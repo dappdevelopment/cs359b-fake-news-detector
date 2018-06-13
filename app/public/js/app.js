@@ -87,6 +87,7 @@ function app() {
     console.log(userAccount);
     if (userAccount == undefined) {
       $('#main').html('No web3 detected. Is Metamask/Mist being used?');
+      alert('No web3 detected. Is Metamask/Mist being used?')
     }
     // Make sure the contract is deployed on the connected network
     if (!(networkId in contractData.networks)) {
