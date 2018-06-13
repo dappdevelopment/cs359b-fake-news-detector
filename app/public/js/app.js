@@ -217,6 +217,7 @@ function app() {
       var url = $("#url").val();
       console.log("closing market");
       if (url != '') {
+        $("#loader").show();
         contract.methods.closeMarket(url).send({from:userAccount})
         .then(function(result) {
           contract.methods.getReports(url).call({from:userAccount})
@@ -239,6 +240,7 @@ function app() {
             inHTML += "</h3>";
             console.log(inHTML);
             $('#close_market_outcome').html(inHTML);
+            $("#loader").hide();
           }).catch(function(e) {
             alert(e);
           });
