@@ -9,10 +9,11 @@ function app() {
   var contractDataPromise = $.getJSON('FakeNewsMarket.json');
   var networkIdPromise = web3.eth.net.getId(); // resolves on the current network id
   var accountsPromise = web3.eth.getAccounts(); // resolves on an array of accounts
-  var isLocal = true;
+  var isLocal = false;
   var path = "https://dapps.stanford.edu/fakenewsdetector/";
   if (isLocal) {
-    path = "http://localhost:3000/fakenewsdetector/"
+    alert("ERROR! ON SERVER!");
+    path = "http://localhost:3000/fakenewsdetector/";
   }
 
   $('#url').val(window.location.search.split('=')[1]);
@@ -89,7 +90,6 @@ function app() {
     contract = new web3.eth.Contract(contractData.abi, contractAddress);
     console.log("Contract Address:", contract);
     console.log("got to end of first then")
-    $("#loader").hide();
     console.log(userAccount);
     contract.methods.reporterExists(userAccount).call()
     .then(function(result) {
@@ -103,7 +103,8 @@ function app() {
       alert(e);
     });
     showReporterArticles();
-    refreshReputation()
+    refreshReputation();
+    $("#loader").hide();
   })
   .catch(console.error);
 
@@ -138,13 +139,13 @@ function app() {
   function refreshReputation() {
     contract.methods.getReporterRep(userAccount).call().then(function (balance) {
       $('#rep_display').text(balance + " REP");
-      $("#loader").hide();
     });
   }
 
   function reportArticle(article, report, rep) {
     contract.methods.report(article.valueOf(), report, rep).send({from:userAccount})
     .then(function(result) {
+      $("#loader").hide();
       alert("Successfully Reported!");
     }).catch(function(e) {
       alert(e);// There was an error! Handle it.
@@ -155,6 +156,7 @@ function app() {
     console.log(email.valueOf());
     contract.methods.addReporter(userAccount, email.valueOf()).send({from:userAccount})
     .then(function(result) {
+      $("#loader").hide();
       alert("Successfully Signed up!");
     }).catch(function(e) {
       alert(e);
@@ -164,30 +166,35 @@ function app() {
   $("#report_button").click(function(){
     var article = $("#url").val();
     var amount = $("#amount").val();
+    $("#loader").show();
     if (amount <= 0) {
       alert("You must bet reputation greater than 0.");
-    }
-    var reportId;
-    if (document.getElementById('report0').checked) {
-      reportId = 0;
-    }
-    if (document.getElementById('report1').checked) {
-      reportId = 1;
-    }
-    if (document.getElementById('report2').checked) {
-      reportId = 2;
-    }
-    if (article != '' && (reportId == 0 || reportId == 1 || reportId == 2)) {
-      reportArticle(article, reportId, amount);
+      $("#loader").hide();
     }
     else {
-      alert("Invalid input!")
+      var reportId;
+      if (document.getElementById('report0').checked) {
+        reportId = 0;
+      }
+      if (document.getElementById('report1').checked) {
+        reportId = 1;
+      }
+      if (document.getElementById('report2').checked) {
+        reportId = 2;
+      }
+      if (article != '' && (reportId == 0 || reportId == 1 || reportId == 2)) {
+        reportArticle(article, reportId, amount);
+      }
+      else {
+        alert("Invalid input!")
+      }
     }
   });
 
   $("#signup_button").click(function() {
     var email=$("#email").val();
     console.log(userAccount);
+    $("#loader").show();
     signUpReporter(email);
   });
 
@@ -244,6 +251,7 @@ function app() {
       console.log(path + "post_article?url="+article+"&deadline="+deadline);
       console.log(article.valueOf());
       console.log(Date.parse(deadline));
+      $("#loader").show();
       contract.methods.articleExists(article.valueOf()).call()
       .then(function(result) {
         console.log(result);
@@ -270,23 +278,23 @@ function app() {
                   );
                 }
               }
-              $("#loader").hide();
             }).catch(function(e) {
               alert(e);// There was an error! Handle it.
             });
             alert("Article Posted!");
           }).catch(function(e) {
             alert(e);// There was an error! Handle it.
-            $("#loader").hide();
           });
+          $("#loader").hide();
         }
       }).catch(function(e) {
         alert(e);// There was an error! Handle it.
-        $("#loader").hide();
       });
+
     }
 
       $("#vote_button").click(function() {
+        $("#loader").show();
         var url = $("#url").val();
         var vote = $('input[name=vote]:checked').val();
         var amount = $("#amount").val();
@@ -295,7 +303,9 @@ function app() {
         } else {
           contract.methods.vote(url.valueOf(), vote).send({from:userAccount, value: web3.utils.toWei(amount, "ether")})
           .then(function(result) {
-            alert("Voted !");
+            alert("Voted!");
+            document.getElementById('url').value = '';
+            $("#loader").hide();
           }).catch(function(e) {
             alert(e);// There was an error! Handle it.
           });
